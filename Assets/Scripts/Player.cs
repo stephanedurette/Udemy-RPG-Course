@@ -7,10 +7,13 @@ public class Player : MonoBehaviour
 
     [Header("Move Info")]
     public float moveSpeed = 12f;
+    public float jumpForce = 8f;
 
     private PlayerStateMachine stateMachine;
     public PlayerMoveState moveState;
     public PlayerIdleState idleState;
+    public PlayerJumpState jumpState;
+    public PlayerFallState fallState;
 
     private Animator animator;
     private Rigidbody2D body;
@@ -23,8 +26,10 @@ public class Player : MonoBehaviour
     {
         stateMachine = new PlayerStateMachine();
 
-        moveState = new PlayerMoveState("Move", stateMachine, this);
-        idleState = new PlayerIdleState("Idle", stateMachine, this);
+        moveState = new PlayerMoveState("OnGround", stateMachine, this);
+        idleState = new PlayerIdleState("OnGround", stateMachine, this);
+        jumpState = new PlayerJumpState("InAir", stateMachine, this);
+        fallState = new PlayerFallState("InAir", stateMachine, this);
 
         animator = GetComponentInChildren<Animator>();
         body = GetComponent<Rigidbody2D>();

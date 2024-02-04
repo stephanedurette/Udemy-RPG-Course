@@ -10,7 +10,7 @@ public class PlayerState
 
     protected float xInput;
 
-    private int animBoolNameHash;
+    private protected int animBoolNameHash;
 
     public PlayerState(string animBoolName, PlayerStateMachine playerStateMachine, Player player)
     {
@@ -30,5 +30,8 @@ public class PlayerState
     public virtual void Update()
     {
         xInput = Input.GetAxisRaw("Horizontal");
+
+        player.Animator.SetFloat("xVelocity", player.Rigidbody.velocity.x);
+        player.Animator.SetFloat("yVelocity", player.Rigidbody.velocity.y);
     }
 }
