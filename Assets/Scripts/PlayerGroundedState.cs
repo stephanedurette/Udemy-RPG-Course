@@ -25,7 +25,7 @@ public class PlayerGroundedState : PlayerState
 
         player.SetVelocity(xInput * player.moveSpeed, player.Rigidbody.velocity.y);
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && player.IsOnGround())
         {
             playerStateMachine.ChangeState(player.jumpState);
         }

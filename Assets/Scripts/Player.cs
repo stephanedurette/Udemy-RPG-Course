@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -8,6 +9,14 @@ public class Player : MonoBehaviour
     [Header("Move Info")]
     public float moveSpeed = 12f;
     public float jumpForce = 8f;
+
+    [Header("Ground Collision Info")]
+    [SerializeField] private Transform groundCheckPosition;
+    [SerializeField] private Vector2 groundCheckDistance;
+    [SerializeField] private LayerMask groundLayer;
+    [Header("Wall Collision Info")]
+    [SerializeField] private Transform wallCheckPosition;
+    [SerializeField] private Vector2 wallCheckDistance;
 
     private PlayerStateMachine stateMachine;
     public PlayerMoveState moveState;
@@ -20,6 +29,8 @@ public class Player : MonoBehaviour
 
     public Animator Animator => animator;
     public Rigidbody2D Rigidbody => body;
+
+    private bool isFacingRight = true;
 
     // Start is called before the first frame update
     void Awake()
@@ -48,6 +59,23 @@ public class Player : MonoBehaviour
 
     public void SetVelocity(float velX, float velY)
     {
-        body.velocity = new Vector2 (velX, velY);
+        body.velocity = new Vector2(velX, velY);
+
+        if (body.velocity.x != 0)
+            SetDirection(body.velocity.x > 0);
+    }
+
+    public bool IsOnGround() => Physics2D.Raycast(groundCheckPosition.position, groundCheckDistance.normalized, groundCheckDistance.magnitude, groundLayer);
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawLine(groundCheckPosition.position, groundCheckPosition.position + (Vector3)groundCheckDistance);
+        Gizmos.DrawLine(wallCheckPosition.position, wallCheckPosition.position + (Vector3)wallCheckDistance);
+    }
+
+    public void SetDirection(bool isFacingRight)
+    {
+        this.isFacingRight = isFacingRight;
+        this.transform.rotation = Quaternion.Euler(0, isFacingRight ? 0 : 180, 0);
     }
 }
