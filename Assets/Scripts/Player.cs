@@ -4,9 +4,19 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+
+    [Header("Move Info")]
+    public float moveSpeed = 12f;
+
     private PlayerStateMachine stateMachine;
-    private PlayerMoveState moveState;
-    private PlayerIdleState idleState;
+    public PlayerMoveState moveState;
+    public PlayerIdleState idleState;
+
+    private Animator animator;
+    private Rigidbody2D body;
+
+    public Animator Animator => animator;
+    public Rigidbody2D Rigidbody => body;
 
     // Start is called before the first frame update
     void Awake()
@@ -15,6 +25,9 @@ public class Player : MonoBehaviour
 
         moveState = new PlayerMoveState("Move", stateMachine, this);
         idleState = new PlayerIdleState("Idle", stateMachine, this);
+
+        animator = GetComponentInChildren<Animator>();
+        body = GetComponent<Rigidbody2D>();
     }
 
     private void Start()
@@ -26,5 +39,10 @@ public class Player : MonoBehaviour
     void Update()
     {
         stateMachine.CurrentState.Update();
+    }
+
+    public void SetVelocity(float velX, float velY)
+    {
+        body.velocity = new Vector2 (velX, velY);
     }
 }

@@ -5,27 +5,30 @@ using UnityEngine;
 
 public class PlayerState
 {
-    private string animBoolName;
-    private PlayerStateMachine playerStateMachine;
-    private Player player;
+    private protected PlayerStateMachine playerStateMachine;
+    private protected Player player;
+
+    protected float xInput;
+
+    private int animBoolNameHash;
 
     public PlayerState(string animBoolName, PlayerStateMachine playerStateMachine, Player player)
     {
-        this.animBoolName = animBoolName;
+        this.animBoolNameHash = Animator.StringToHash(animBoolName);
         this.playerStateMachine = playerStateMachine;
         this.player = player;
     }
 
     public virtual void Enter()
     {
-
+        player.Animator.SetBool(animBoolNameHash, true);
     }
     public virtual void Exit()
     {
-
+        player.Animator.SetBool(animBoolNameHash, false);
     }
     public virtual void Update()
     {
-
+        xInput = Input.GetAxisRaw("Horizontal");
     }
 }
