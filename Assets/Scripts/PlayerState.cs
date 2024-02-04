@@ -12,6 +12,10 @@ public class PlayerState
 
     private protected int animBoolNameHash;
 
+    private protected float stateTimer;
+
+    private static protected float dashUsageTimer;
+
     public PlayerState(string animBoolName, PlayerStateMachine playerStateMachine, Player player)
     {
         this.animBoolNameHash = Animator.StringToHash(animBoolName);
@@ -33,5 +37,18 @@ public class PlayerState
 
         player.Animator.SetFloat("xVelocity", player.Rigidbody.velocity.x);
         player.Animator.SetFloat("yVelocity", player.Rigidbody.velocity.y);
+
+        stateTimer -= Time.deltaTime;
+        dashUsageTimer -= Time.deltaTime;
+
+        CheckDashState();
+    }
+
+    private void CheckDashState()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftShift) && dashUsageTimer <= 0)
+        {
+            playerStateMachine.ChangeState(player.dashState);
+        }
     }
 }

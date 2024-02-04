@@ -18,11 +18,17 @@ public class Player : MonoBehaviour
     [SerializeField] private Transform wallCheckPosition;
     [SerializeField] private Vector2 wallCheckDistance;
 
+    [Header("Dash Info")]
+    public float dashSpeed;
+    public float dashDuration;
+    public float dashCooldown;
+
     private PlayerStateMachine stateMachine;
     public PlayerMoveState moveState;
     public PlayerIdleState idleState;
     public PlayerJumpState jumpState;
     public PlayerFallState fallState;
+    public PlayerDashState dashState;
 
     private Animator animator;
     private Rigidbody2D body;
@@ -30,7 +36,7 @@ public class Player : MonoBehaviour
     public Animator Animator => animator;
     public Rigidbody2D Rigidbody => body;
 
-    private bool isFacingRight = true;
+    public int facingDirection { get; private set; } = 1;
 
     // Start is called before the first frame update
     void Awake()
@@ -41,6 +47,7 @@ public class Player : MonoBehaviour
         idleState = new PlayerIdleState("OnGround", stateMachine, this);
         jumpState = new PlayerJumpState("InAir", stateMachine, this);
         fallState = new PlayerFallState("InAir", stateMachine, this);
+        dashState = new PlayerDashState("Dash", stateMachine, this);
 
         animator = GetComponentInChildren<Animator>();
         body = GetComponent<Rigidbody2D>();
@@ -62,7 +69,7 @@ public class Player : MonoBehaviour
         body.velocity = new Vector2(velX, velY);
 
         if (body.velocity.x != 0)
-            SetDirection(body.velocity.x > 0);
+            SetDirection(body.velocity.x > 0 ? 1 : -1);
     }
 
     public bool IsOnGround() => Physics2D.Raycast(groundCheckPosition.position, groundCheckDistance.normalized, groundCheckDistance.magnitude, groundLayer);
@@ -73,9 +80,9 @@ public class Player : MonoBehaviour
         Gizmos.DrawLine(wallCheckPosition.position, wallCheckPosition.position + (Vector3)wallCheckDistance);
     }
 
-    public void SetDirection(bool isFacingRight)
+    public void SetDirection(int direction)
     {
-        this.isFacingRight = isFacingRight;
-        this.transform.rotation = Quaternion.Euler(0, isFacingRight ? 0 : 180, 0);
+        this.facingDirection = direction;
+        this.transform.rotation = Quaternion.Euler(0, direction == 1 ? 0 : 180, 0);
     }
 }

@@ -181,6 +181,9 @@ MonoBehaviour:
     m_Bits: 8
   wallCheckPosition: {fileID: 1311408159}
   wallCheckDistance: {x: 0.22, y: 0}
+  dashSpeed: 20
+  dashDuration: 0.25
+  dashCooldown: 0.25
 --- !u!50 &106138542
 Rigidbody2D:
   serializedVersion: 4
