@@ -29,5 +29,12 @@ public class PlayerGroundedState : PlayerState
         {
             playerStateMachine.ChangeState(player.jumpState);
         }
+
+        if (!player.IsOnGround())
+        {
+            playerStateMachine.ChangeState(player.fallState);
+        }
+
+        
     }
 }
