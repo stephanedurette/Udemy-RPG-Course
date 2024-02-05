@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.IO.LowLevel.Unsafe;
@@ -23,7 +24,14 @@ public class PlayerGroundedState : PlayerState
     {
         base.Update();
 
-        player.SetVelocity(xInput * player.moveSpeed, player.Rigidbody.velocity.y);
+        if (player.WallDetected() && xInput == player.facingDirection)
+        {
+            player.SetVelocity(0, player.Rigidbody.velocity.y);
+        } else
+        {
+            player.SetVelocity(xInput * player.moveSpeed, player.Rigidbody.velocity.y);
+        }
+        
 
         if (Input.GetKeyDown(KeyCode.Space) && player.IsOnGround())
         {
@@ -32,9 +40,8 @@ public class PlayerGroundedState : PlayerState
 
         if (!player.IsOnGround())
         {
+            player.fallState.coyoteTimer = 0.2f;
             playerStateMachine.ChangeState(player.fallState);
         }
-
-        
     }
 }
