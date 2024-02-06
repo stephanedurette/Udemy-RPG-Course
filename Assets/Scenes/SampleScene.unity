@@ -180,7 +180,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   wallCheckPosition: {fileID: 1311408159}
-  wallCheckDistance: {x: 0.1, y: 0}
+  wallCheckDistance: {x: 0.05, y: 0}
   dashSpeed: 20
   dashDuration: 0.25
   dashCooldown: 0.25
@@ -370,7 +370,7 @@ Transform:
   m_GameObject: {fileID: 479785461}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.24, y: -5.41, z: 0}
+  m_LocalPosition: {x: 5.24, y: -0.78, z: 0}
   m_LocalScale: {x: 5.82, y: -6.7, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -859,7 +859,7 @@ Transform:
   m_GameObject: {fileID: 1311408158}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.277, y: 0, z: 0}
+  m_LocalPosition: {x: 0.222, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

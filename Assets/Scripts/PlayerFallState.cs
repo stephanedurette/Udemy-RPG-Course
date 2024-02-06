@@ -27,6 +27,11 @@ public class PlayerFallState : PlayerAirState
         base.Update();
         coyoteTimer -= Time.deltaTime;
 
+        if (player.WallDetected() && player.Rigidbody.velocity.y < 0)
+        {
+            playerStateMachine.ChangeState(player.wallslideState);
+        }
+
         if (player.IsOnGround())
         {
             playerStateMachine.ChangeState(player.idleState);

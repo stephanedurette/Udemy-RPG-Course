@@ -29,9 +29,12 @@ public class Player : MonoBehaviour
     public PlayerJumpState jumpState;
     public PlayerFallState fallState;
     public PlayerDashState dashState;
+    public PlayerWallslideState wallslideState;
 
     private Animator animator;
     private Rigidbody2D body;
+
+    public float startingGravityScale;
 
     public Animator Animator => animator;
     public Rigidbody2D Rigidbody => body;
@@ -48,9 +51,12 @@ public class Player : MonoBehaviour
         jumpState = new PlayerJumpState("InAir", stateMachine, this);
         fallState = new PlayerFallState("InAir", stateMachine, this);
         dashState = new PlayerDashState("Dash", stateMachine, this);
+        wallslideState = new PlayerWallslideState("Wallslide", stateMachine, this);
 
         animator = GetComponentInChildren<Animator>();
         body = GetComponent<Rigidbody2D>();
+
+        startingGravityScale = body.gravityScale;
     }
 
     private void Start()
@@ -90,5 +96,6 @@ public class Player : MonoBehaviour
     {
         this.facingDirection = direction;
         this.transform.rotation = Quaternion.Euler(0, direction == 1 ? 0 : 180, 0);
+        this.wallCheckDistance.x = direction * Mathf.Abs(wallCheckDistance.x);
     }
 }

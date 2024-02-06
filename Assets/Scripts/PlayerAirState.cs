@@ -23,6 +23,13 @@ public class PlayerAirState : PlayerState
     {
         base.Update();
 
-        player.SetVelocity(xInput * player.moveSpeed * 0.8f, player.Rigidbody.velocity.y);
+        if (player.WallDetected() && xInput == player.facingDirection)
+        {
+            player.SetVelocity(0, player.Rigidbody.velocity.y);
+        }
+        else
+        {
+            player.SetVelocity(xInput * player.moveSpeed * 0.8f, player.Rigidbody.velocity.y);
+        }
     }
 }

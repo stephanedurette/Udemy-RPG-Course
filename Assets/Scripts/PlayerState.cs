@@ -8,7 +8,7 @@ public class PlayerState
     private protected PlayerStateMachine playerStateMachine;
     private protected Player player;
 
-    protected float xInput;
+    protected float xInput, yInput;
 
     private protected int animBoolNameHash;
 
@@ -34,6 +34,7 @@ public class PlayerState
     public virtual void Update()
     {
         xInput = Input.GetAxisRaw("Horizontal");
+        yInput = Input.GetAxisRaw("Vertical");
 
         player.Animator.SetFloat("xVelocity", player.Rigidbody.velocity.x);
         player.Animator.SetFloat("yVelocity", player.Rigidbody.velocity.y);
