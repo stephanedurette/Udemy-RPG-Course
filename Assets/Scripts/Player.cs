@@ -30,11 +30,10 @@ public class Player : MonoBehaviour
     public PlayerFallState fallState;
     public PlayerDashState dashState;
     public PlayerWallslideState wallslideState;
+    public PlayerWallJumpState wallJumpState;
 
     private Animator animator;
     private Rigidbody2D body;
-
-    public float startingGravityScale;
 
     public Animator Animator => animator;
     public Rigidbody2D Rigidbody => body;
@@ -52,11 +51,10 @@ public class Player : MonoBehaviour
         fallState = new PlayerFallState("InAir", stateMachine, this);
         dashState = new PlayerDashState("Dash", stateMachine, this);
         wallslideState = new PlayerWallslideState("Wallslide", stateMachine, this);
+        wallJumpState = new PlayerWallJumpState("InAir", stateMachine, this);
 
         animator = GetComponentInChildren<Animator>();
         body = GetComponent<Rigidbody2D>();
-
-        startingGravityScale = body.gravityScale;
     }
 
     private void Start()
@@ -73,6 +71,9 @@ public class Player : MonoBehaviour
     public void SetVelocity(float velX, float velY)
     {
         body.velocity = new Vector2(velX, velY);
+
+        //if (body.velocity != Vector2.zero)
+            //Debug.Log(body.velocity);
 
         if (body.velocity.x != 0)
             SetDirection(body.velocity.x > 0 ? 1 : -1);

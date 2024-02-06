@@ -41,15 +41,5 @@ public class PlayerState
 
         stateTimer -= Time.deltaTime;
         dashUsageTimer -= Time.deltaTime;
-
-        CheckDashState();
-    }
-
-    private void CheckDashState()
-    {
-        if (Input.GetKeyDown(KeyCode.LeftShift) && dashUsageTimer <= 0)
-        {
-            playerStateMachine.ChangeState(player.dashState);
-        }
     }
 }

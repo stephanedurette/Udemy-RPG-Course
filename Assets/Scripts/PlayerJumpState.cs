@@ -12,7 +12,7 @@ public class PlayerJumpState : PlayerAirState
     public override void Enter()
     {
         base.Enter();
-
+        Debug.Log("jumping");
         player.SetVelocity(player.Rigidbody.velocity.x, player.jumpForce);
     }
 

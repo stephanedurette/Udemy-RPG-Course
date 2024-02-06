@@ -24,6 +24,12 @@ public class PlayerGroundedState : PlayerState
     {
         base.Update();
 
+        if (Input.GetKeyDown(KeyCode.LeftShift) && dashUsageTimer <= 0)
+        {
+            playerStateMachine.ChangeState(player.dashState);
+            return;
+        }
+
         if (player.WallDetected() && xInput == player.facingDirection)
         {
             player.SetVelocity(0, player.Rigidbody.velocity.y);

@@ -23,12 +23,20 @@ public class PlayerAirState : PlayerState
     {
         base.Update();
 
+        if (Input.GetKeyDown(KeyCode.LeftShift) && dashUsageTimer <= 0)
+        {
+            playerStateMachine.ChangeState(player.dashState);
+            return;
+        }
+
         if (player.WallDetected() && xInput == player.facingDirection)
         {
             player.SetVelocity(0, player.Rigidbody.velocity.y);
+            Debug.Log("wall detected");
         }
         else
         {
+            
             player.SetVelocity(xInput * player.moveSpeed * 0.8f, player.Rigidbody.velocity.y);
         }
     }
