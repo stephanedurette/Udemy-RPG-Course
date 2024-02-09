@@ -24,6 +24,12 @@ public class PlayerGroundedState : PlayerState
     {
         base.Update();
 
+        if (Input.GetMouseButtonDown(0))
+        {
+            playerStateMachine.ChangeState(player.playerPrimaryAttackState);
+            return;
+        }
+
         if (Input.GetKeyDown(KeyCode.LeftShift) && dashUsageTimer <= 0)
         {
             playerStateMachine.ChangeState(player.dashState);

@@ -13,6 +13,7 @@ public class PlayerState
     private protected int animBoolNameHash;
 
     private protected float stateTimer;
+    private protected bool stateEndTrigger;
 
     private static protected float dashUsageTimer;
 
@@ -26,6 +27,7 @@ public class PlayerState
     public virtual void Enter()
     {
         player.Animator.SetBool(animBoolNameHash, true);
+        stateEndTrigger = false;
     }
     public virtual void Exit()
     {
@@ -41,5 +43,10 @@ public class PlayerState
 
         stateTimer -= Time.deltaTime;
         dashUsageTimer -= Time.deltaTime;
+    }
+
+    public void SetStateEndTrigger()
+    {
+        stateEndTrigger = true;
     }
 }

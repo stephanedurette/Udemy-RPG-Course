@@ -31,6 +31,7 @@ public class Player : MonoBehaviour
     public PlayerDashState dashState;
     public PlayerWallslideState wallslideState;
     public PlayerWallJumpState wallJumpState;
+    public PlayerPrimaryAttackState playerPrimaryAttackState;
 
     private Animator animator;
     private Rigidbody2D body;
@@ -52,6 +53,7 @@ public class Player : MonoBehaviour
         dashState = new PlayerDashState("Dash", stateMachine, this);
         wallslideState = new PlayerWallslideState("Wallslide", stateMachine, this);
         wallJumpState = new PlayerWallJumpState("InAir", stateMachine, this);
+        playerPrimaryAttackState = new PlayerPrimaryAttackState("Attack", stateMachine, this);
 
         animator = GetComponentInChildren<Animator>();
         body = GetComponent<Rigidbody2D>();
@@ -71,12 +73,13 @@ public class Player : MonoBehaviour
     public void SetVelocity(float velX, float velY)
     {
         body.velocity = new Vector2(velX, velY);
-
-        //if (body.velocity != Vector2.zero)
-            //Debug.Log(body.velocity);
-
         if (body.velocity.x != 0)
             SetDirection(body.velocity.x > 0 ? 1 : -1);
+    }
+
+    public void SetCurrentStateEndTrigger()
+    {
+        stateMachine.CurrentState.SetStateEndTrigger();
     }
 
     public bool IsOnGround() => Physics2D.Raycast(groundCheckPosition.position, groundCheckDistance.normalized, groundCheckDistance.magnitude, groundLayer);
