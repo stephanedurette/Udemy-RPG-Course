@@ -172,6 +172,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e104f7307584183498e971f30bd604fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerAttackMovement:
+  - {x: 8, y: 3}
+  - {x: 5, y: 3}
+  - {x: 10, y: 5}
   moveSpeed: 8
   jumpForce: 12
   groundCheckPosition: {fileID: 1837135168}

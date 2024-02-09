@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    [Header("Attack Info")]
+    public Vector2[] playerAttackMovement;
 
     [Header("Move Info")]
     public float moveSpeed = 12f;
