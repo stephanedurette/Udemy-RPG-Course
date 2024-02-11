@@ -48,12 +48,14 @@ public class PlayerGroundedState : PlayerState
         if (Input.GetKeyDown(KeyCode.Space) && player.IsOnGround())
         {
             playerStateMachine.ChangeState(player.jumpState);
+            return;
         }
 
         if (!player.IsOnGround())
         {
             player.fallState.coyoteTimer = 0.2f;
             playerStateMachine.ChangeState(player.fallState);
+            return;
         }
     }
 }

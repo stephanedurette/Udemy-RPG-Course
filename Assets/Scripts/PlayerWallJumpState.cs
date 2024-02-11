@@ -36,6 +36,7 @@ public class PlayerWallJumpState : PlayerState
         if (stateTimer < 0)
         {
             playerStateMachine.ChangeState(player.fallState);
+            return;
         }
     }
 }

@@ -31,15 +31,16 @@ public class PlayerWallslideState : PlayerState
         if (xInput != 0 && player.facingDirection != xInput)
         {
             playerStateMachine.ChangeState(player.fallState);
+            return;
         }
 
         if (player.IsOnGround())
         {
             playerStateMachine.ChangeState(player.idleState);
+            return;
         }
 
         float speedMultiplier = yInput < 0 ? 1 : 0.8f;
-
         player.SetVelocity(0, player.Rigidbody.velocity.y * speedMultiplier);
     }
 }

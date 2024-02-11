@@ -30,16 +30,19 @@ public class PlayerFallState : PlayerAirState
         if (player.WallDetected() && player.Rigidbody.velocity.y < 0)
         {
             playerStateMachine.ChangeState(player.wallslideState);
+            return;
         }
 
         if (player.IsOnGround())
         {
             playerStateMachine.ChangeState(player.idleState);
+            return;
         }
 
         if (Input.GetKeyDown(KeyCode.Space) && coyoteTimer > 0)
         {
             playerStateMachine.ChangeState(player.jumpState);
+            return;
         }
     }
 }

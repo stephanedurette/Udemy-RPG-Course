@@ -20,7 +20,7 @@ public class PlayerPrimaryAttackState : PlayerState
 
         Vector2 attackMovement = player.playerAttackMovement[comboCounter];
 
-        int attackDirection = xInput == 0f ? player.facingDirection : (int)xInput;
+        int attackDirection = player.facingDirection;
 
         player.SetVelocity(attackMovement.x * attackDirection, attackMovement.y);
         stateTimer = 0.1f;
@@ -53,18 +53,16 @@ public class PlayerPrimaryAttackState : PlayerState
             mouseClickedDuringAnimation = true;
         }
 
+        if (stateEndTrigger && mouseClickedDuringAnimation){
+            playerStateMachine.ChangeState(player.playerPrimaryAttackState);
+            return;
+        }
+
         if (stateEndTrigger)
         {
-            if (mouseClickedDuringAnimation)
-            {
-                playerStateMachine.ChangeState(player.playerPrimaryAttackState);
-                return;
-            } else
-            {
-                comboCounter = 0;
-                playerStateMachine.ChangeState(player.idleState);
-                return;
-            }
+            comboCounter = 0;
+            playerStateMachine.ChangeState(player.idleState);
+            return;
         }
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
 
@@ -32,12 +33,9 @@ public class PlayerAirState : PlayerState
         if (player.WallDetected() && xInput == player.facingDirection)
         {
             player.SetVelocity(0, player.Rigidbody.velocity.y);
-            Debug.Log("wall detected");
         }
-        else
-        {
-            
-            player.SetVelocity(xInput * player.moveSpeed * 0.8f, player.Rigidbody.velocity.y);
-        }
+
+        player.SetVelocity(xInput * player.moveSpeed * 0.8f, player.Rigidbody.velocity.y);
+        
     }
 }
