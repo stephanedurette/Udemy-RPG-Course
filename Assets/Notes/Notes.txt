@@ -1,0 +1,13 @@
+REFACTOR
+
+-- Replace player state machine with the one you created for this -> https://www.youtube.com/watch?v=NnH6ZK5jt7o
+-- Use timers from here -> https://github.com/stephanedurette/Unity-Improved-Timers
+-- Use new input system as scriptable object
+
+NEW FEATURE
+
+-- Players can dash when on walls
+
+TUTORIAL
+
+-- I'm on 48 in the tutorial
