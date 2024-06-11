@@ -4,6 +4,7 @@ REFACTOR
     - clean up animation player
 -- Use timers from here -> https://github.com/stephanedurette/Unity-Improved-Timers
 -- Use new input system as scriptable object
+- separate ground checker into its own component
 
 NEW FEATURE
 
