@@ -39,6 +39,7 @@ public class Player : MonoBehaviour
 
     //timers
     public CountdownTimer dashDurationTimer;
+    public CountdownTimer coyoteTimer;
     CountdownTimer dashCooldownTimer;
 
     private float startingGravityScale;
@@ -49,6 +50,7 @@ public class Player : MonoBehaviour
         //Timers
         dashDurationTimer = new CountdownTimer(dashDuration);
         dashCooldownTimer = new CountdownTimer(dashCooldown);
+        coyoteTimer = new CountdownTimer(0.2f);
 
         dashDurationTimer.OnTimerStop += () => dashCooldownTimer.Start();
 
@@ -64,6 +66,7 @@ public class Player : MonoBehaviour
         //Jump
         stateMachine.AddTransition(movingState, jumpingState, new FuncPredicate(() => JumpInput && groundChecker.IsColliding));
         stateMachine.AddTransition(wallslidingState, jumpingState, new FuncPredicate(() => JumpInput ));
+        stateMachine.AddTransition(fallingState, jumpingState, new FuncPredicate(() => JumpInput && coyoteTimer.IsRunning));
 
         //Fall
         stateMachine.AddTransition(jumpingState, fallingState, new FuncPredicate(() => rigidBody.velocity.y < 0));

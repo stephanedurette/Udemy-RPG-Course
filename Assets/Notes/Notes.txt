@@ -5,7 +5,6 @@ REFACTOR
 
 -- Use new input system as scriptable object
 
-
 TUTORIAL
 
 -- I'm on 48 in the tutorial

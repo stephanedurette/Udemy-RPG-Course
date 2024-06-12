@@ -17,6 +17,7 @@ public class PlayerJumpingState : PlayerBaseState
     {
         player.StartAnimation(JumpingAnimHash);
         player.Jump();
+        player.coyoteTimer.Stop();
     }
 
     public override void OnExit()

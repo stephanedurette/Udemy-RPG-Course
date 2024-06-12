@@ -20,6 +20,7 @@ public class PlayerWallslidingState : PlayerBaseState
 
     public override void OnExit()
     {
+        player.coyoteTimer.Start();
     }
 
     public override void Update()
