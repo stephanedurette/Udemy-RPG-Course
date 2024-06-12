@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerAttackingState : PlayerBaseState
 {
+
     public PlayerAttackingState(Player player) : base(player)
     {
     }
@@ -14,11 +15,12 @@ public class PlayerAttackingState : PlayerBaseState
 
     public override void OnEnter()
     {
-        player.StartAnimation(AttackingAnimHash);
+        player.StartAttack();
     }
 
     public override void OnExit()
     {
+        
     }
 
     public override void Update()

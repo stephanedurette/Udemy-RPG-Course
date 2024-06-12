@@ -11,14 +11,12 @@ public class Player : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private Rigidbody2D rigidBody;
     [SerializeField] private Transform rotatePivot;
+    [SerializeField] private AttackManager attackManager;
 
     [Header("Collision Check References")]
     [SerializeField] private BoxCaster groundChecker;
     [SerializeField] private BoxCaster rightWallChecker;
     [SerializeField] private BoxCaster leftWallChecker;
-
-    [Header("Attack Settings")]
-    public Vector2[] playerAttackMovement;
 
     [Header("Move Settings")]
     public float moveSpeed = 12f;
@@ -62,6 +60,7 @@ public class Player : MonoBehaviour
         var fallingState = new PlayerFallingState(this);
         var wallslidingState = new PlayerWallslidingState(this);
         var dashingState = new PlayerDashingState(this);
+        var attackingState = new PlayerAttackingState(this);
 
         //Jump
         stateMachine.AddTransition(movingState, jumpingState, new FuncPredicate(() => JumpInput && groundChecker.IsColliding));
@@ -80,9 +79,13 @@ public class Player : MonoBehaviour
         //Moving
         stateMachine.AddTransition(fallingState, movingState, new FuncPredicate(() => groundChecker.IsColliding));
         stateMachine.AddTransition(wallslidingState, movingState, new FuncPredicate(() => groundChecker.IsColliding));
+        stateMachine.AddTransition(attackingState, movingState, new FuncPredicate(() => !attackManager.IsAttacking));
 
         //Dashing
         stateMachine.AddAnyTransition(dashingState, new FuncPredicate(() => DashInput && !dashDurationTimer.IsRunning && !dashCooldownTimer.IsRunning));
+
+        //Attacking
+        stateMachine.AddTransition(movingState, attackingState, new FuncPredicate(() => AttackInput && !attackManager.IsAttacking));
 
         stateMachine.SetState(movingState);
     }
@@ -92,6 +95,28 @@ public class Player : MonoBehaviour
     private void Start()
     {
 
+    }
+
+    private void OnEnable()
+    {
+        attackManager.OnAttackStarted += OnAttackStarted;
+        attackManager.OnAttackFinished += OnAttackFinished;
+    }
+
+    private void OnAttackFinished()
+    {
+        SetVelocity(0, 0);
+    }
+
+    private void OnDisable()
+    {
+        attackManager.OnAttackStarted -= OnAttackStarted;
+        attackManager.OnAttackFinished -= OnAttackFinished;
+    }
+
+    private void OnAttackStarted(AttackData data)
+    {
+        SetVelocity(data.AttackMovement.x * PlayerSpriteFacing(), data.AttackMovement.y);
     }
 
     public int PlayerSpriteFacing()
@@ -116,6 +141,11 @@ public class Player : MonoBehaviour
     public void SetYVelocity(float y) => rigidBody.velocity = new Vector2(rigidBody.velocity.x, y);
     public void SetXVelocity(float x) => rigidBody.velocity = new Vector2(x, rigidBody.velocity.y);
     public void SetVelocity(float x, float y) => rigidBody.velocity = new Vector2(x, y);
+
+    public void StartAttack()
+    {
+        attackManager.StartAttack();
+    }
 
     public void Jump()
     {

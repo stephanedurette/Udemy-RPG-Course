@@ -1,8 +1,5 @@
 REFACTOR
 
--- Replace player state machine with the one you created for this -> https://www.youtube.com/watch?v=NnH6ZK5jt7o
-    - Attacking State
-
 -- Use new input system as scriptable object
 
 TUTORIAL
