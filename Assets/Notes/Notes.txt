@@ -1,14 +1,10 @@
 REFACTOR
 
 -- Replace player state machine with the one you created for this -> https://www.youtube.com/watch?v=NnH6ZK5jt7o
-    - clean up animation player
--- Use timers from here -> https://github.com/stephanedurette/Unity-Improved-Timers
+    - Attacking State
+
 -- Use new input system as scriptable object
-- separate ground checker into its own component
 
-NEW FEATURE
-
--- Players can dash when on walls
 
 TUTORIAL
 

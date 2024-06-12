@@ -8,6 +8,8 @@ public class StateMachine
     Dictionary<Type, StateNode> nodes = new();
     HashSet<ITransition> anyTransitions = new();
 
+    public Type CurrentState => current.State.GetType();
+
     public void Update()
     {
         ITransition transition = GetTransition();

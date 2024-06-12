@@ -1,3 +1,5 @@
+using ImprovedTimers;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -5,103 +7,215 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [Header("Attack Info")]
+    [Header("References")]
+    [SerializeField] private Animator animator;
+    [SerializeField] private Rigidbody2D rigidBody;
+    [SerializeField] private Transform rotatePivot;
+
+    [Header("Collision Check References")]
+    [SerializeField] private BoxCaster groundChecker;
+    [SerializeField] private BoxCaster rightWallChecker;
+    [SerializeField] private BoxCaster leftWallChecker;
+
+    [Header("Attack Settings")]
     public Vector2[] playerAttackMovement;
 
-    [Header("Move Info")]
+    [Header("Move Settings")]
     public float moveSpeed = 12f;
     public float jumpForce = 8f;
 
-    [Header("Ground Collision Info")]
-    [SerializeField] private Transform groundCheckPosition;
-    [SerializeField] private Vector2 groundCheckDistance;
-    [SerializeField] private LayerMask groundLayer;
-    [Header("Wall Collision Info")]
-    [SerializeField] private Transform wallCheckPosition;
-    [SerializeField] private Vector2 wallCheckDistance;
-
-    [Header("Dash Info")]
+    [Header("Dash Settings")]
     public float dashSpeed;
     public float dashDuration;
     public float dashCooldown;
 
-    private PlayerStateMachine stateMachine;
-    public PlayerMoveState moveState;
-    public PlayerIdleState idleState;
-    public PlayerJumpState jumpState;
-    public PlayerFallState fallState;
-    public PlayerDashState dashState;
-    public PlayerWallslideState wallslideState;
-    public PlayerWallJumpState wallJumpState;
-    public PlayerPrimaryAttackState playerPrimaryAttackState;
+    private StateMachine stateMachine;
 
-    private Animator animator;
-    private Rigidbody2D body;
+    //input states
+    private Vector2 InputVector;
+    private bool JumpInput;
+    private bool DashInput;
+    private bool AttackInput;
 
-    public Animator Animator => animator;
-    public Rigidbody2D Rigidbody => body;
+    //timers
+    public CountdownTimer dashDurationTimer;
+    CountdownTimer dashCooldownTimer;
 
-    public int facingDirection { get; private set; } = 1;
+    private float startingGravityScale;
 
     // Start is called before the first frame update
     void Awake()
     {
-        stateMachine = new PlayerStateMachine();
+        //Timers
+        dashDurationTimer = new CountdownTimer(dashDuration);
+        dashCooldownTimer = new CountdownTimer(dashCooldown);
 
-        moveState = new PlayerMoveState("OnGround", stateMachine, this);
-        idleState = new PlayerIdleState("OnGround", stateMachine, this);
-        jumpState = new PlayerJumpState("InAir", stateMachine, this);
-        fallState = new PlayerFallState("InAir", stateMachine, this);
-        dashState = new PlayerDashState("Dash", stateMachine, this);
-        wallslideState = new PlayerWallslideState("Wallslide", stateMachine, this);
-        wallJumpState = new PlayerWallJumpState("InAir", stateMachine, this);
-        playerPrimaryAttackState = new PlayerPrimaryAttackState("Attack", stateMachine, this);
+        dashDurationTimer.OnTimerStop += () => dashCooldownTimer.Start();
 
-        animator = GetComponentInChildren<Animator>();
-        body = GetComponent<Rigidbody2D>();
+        //State Machine
+        stateMachine = new StateMachine();
+
+        var movingState = new PlayerMovementState(this);
+        var jumpingState = new PlayerJumpingState(this);
+        var fallingState = new PlayerFallingState(this);
+        var wallslidingState = new PlayerWallslidingState(this);
+        var dashingState = new PlayerDashingState(this);
+
+        //Jump
+        stateMachine.AddTransition(movingState, jumpingState, new FuncPredicate(() => JumpInput && groundChecker.IsColliding));
+        stateMachine.AddTransition(wallslidingState, jumpingState, new FuncPredicate(() => JumpInput ));
+
+        //Fall
+        stateMachine.AddTransition(jumpingState, fallingState, new FuncPredicate(() => rigidBody.velocity.y < 0));
+        stateMachine.AddTransition(movingState, fallingState, new FuncPredicate(() => rigidBody.velocity.y < 0 && !groundChecker.IsColliding));
+        stateMachine.AddTransition(wallslidingState, fallingState, new FuncPredicate(() => InputVector.x == -WallDirection()));
+        stateMachine.AddTransition(dashingState, fallingState, new FuncPredicate(() => !dashDurationTimer.IsRunning));
+
+        //Wallslide
+        stateMachine.AddTransition(fallingState, wallslidingState, new FuncPredicate(WallSlidePredicate));
+
+        //Moving
+        stateMachine.AddTransition(fallingState, movingState, new FuncPredicate(() => groundChecker.IsColliding));
+        stateMachine.AddTransition(wallslidingState, movingState, new FuncPredicate(() => groundChecker.IsColliding));
+
+        //Dashing
+        stateMachine.AddAnyTransition(dashingState, new FuncPredicate(() => DashInput && !dashDurationTimer.IsRunning && !dashCooldownTimer.IsRunning));
+
+        stateMachine.SetState(movingState);
     }
+
+    bool WasWallSliding() => rigidBody.velocity.y < 0 && IsCollidingWithWall();
 
     private void Start()
     {
-        stateMachine.Initialize(idleState);
+
     }
+
+    public int PlayerSpriteFacing()
+    {
+        if (WasWallSliding())
+        {
+            return -WallDirection();
+        } else
+        {
+            return rotatePivot.transform.rotation == Quaternion.identity ? 1 : -1;
+        }
+    }
+
+    private bool IsCollidingWithWall() => rightWallChecker.IsColliding || leftWallChecker.IsColliding;
 
     // Update is called once per frame
     void Update()
     {
-        stateMachine.CurrentState.Update();
+        stateMachine.Update();
     }
 
-    public void SetVelocity(float velX, float velY)
+    public void SetYVelocity(float y) => rigidBody.velocity = new Vector2(rigidBody.velocity.x, y);
+    public void SetXVelocity(float x) => rigidBody.velocity = new Vector2(x, rigidBody.velocity.y);
+    public void SetVelocity(float x, float y) => rigidBody.velocity = new Vector2(x, y);
+
+    public void Jump()
     {
-        body.velocity = new Vector2(velX, velY);
-        if (body.velocity.x != 0)
-            SetDirection(body.velocity.x > 0 ? 1 : -1);
+        if (WasWallSliding())
+        {
+            float angleFromWall = 30;
+            Vector2 rotatedVelocity = (Vector2.up * jumpForce).Rotated(angleFromWall * WallDirection());
+            SetVelocity(rotatedVelocity.x, rotatedVelocity.y);
+
+            SetFacing((int)Mathf.Sign(rotatedVelocity.x));
+        } else
+        {
+            SetYVelocity(jumpForce);
+        }
     }
 
-    public void SetCurrentStateEndTrigger()
+    private bool WallSlidePredicate()
     {
-        stateMachine.CurrentState.SetStateEndTrigger();
+        bool collidingWithWall = IsCollidingWithWall();
+        bool inputTowardsWall = (InputVector.x != -WallDirection());
+
+        return collidingWithWall && inputTowardsWall;
     }
 
-    public bool IsOnGround() => Physics2D.Raycast(groundCheckPosition.position, groundCheckDistance.normalized, groundCheckDistance.magnitude, groundLayer);
+    private int WallDirection()
+    {
+        if (rightWallChecker.IsColliding) return 1;
+        if (leftWallChecker.IsColliding) return -1;
+        return 0;
+    }
+
+    public void HandleWallSlide()
+    {
+        float speedMultiplier = InputVector.y < 0 ? 1 : 0.8f;
+        SetVelocity(0 , rigidBody.velocity.y * speedMultiplier);
+    }
+
+    public void StartDash()
+    {
+        int spriteFacing = PlayerSpriteFacing();
+
+        startingGravityScale = rigidBody.gravityScale;
+        rigidBody.gravityScale = 0;
+
+        SetVelocity(spriteFacing * dashSpeed, 0);
+        SetFacing(spriteFacing);
+        dashDurationTimer.Start();
+    }
+
+    public void StopDash()
+    {
+        dashDurationTimer.Stop();
+        rigidBody.gravityScale = startingGravityScale;
+    }
+
+    public void HandleMovement()
+    {
+        SetXVelocity(InputVector.x * moveSpeed);
+
+        if (InputVector.x != 0)
+            SetFacing((int)InputVector.x);
+    }
+
+    public void HandleAirMovement()
+    {
+        if (InputVector.x != 0)
+            SetXVelocity(InputVector.x * moveSpeed);
+
+        if (InputVector.x != 0)
+            SetFacing((int)InputVector.x);
+    }
+
+    private void SetFacing(int dir)
+    {
+        Quaternion facingRightRotation = Quaternion.identity;
+        Quaternion facingLeftRotation = Quaternion.Euler(180 * Vector3.up);
+
+        rotatePivot.rotation = dir == 1 ? facingRightRotation : facingLeftRotation;
+    }
+
+    public void UpdateInputs()
+    {
+        InputVector = new Vector2 (Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+        AttackInput = Input.GetMouseButton(0);
+        JumpInput = Input.GetKey(KeyCode.Space);
+        DashInput = Input.GetKey(KeyCode.LeftShift);
+    }
+
+    public void UpdateAnimatorVelocity()
+    {
+        animator.SetFloat("xVelocity", rigidBody.velocity.x);
+        animator.SetFloat("yVelocity", rigidBody.velocity.y);
+    }
+
+    private void FixedUpdate()
+    {
+        stateMachine.FixedUpdate();
+    }
+
     
-    public bool WallDetected() {
-        bool wallDetected = Physics2D.Raycast(wallCheckPosition.position, wallCheckDistance.normalized, wallCheckDistance.magnitude, groundLayer);
-
-        return wallDetected;
-    }
-
-    private void OnDrawGizmos()
+    public void StartAnimation(int animHash)
     {
-        Gizmos.DrawLine(groundCheckPosition.position, groundCheckPosition.position + (Vector3)groundCheckDistance);
-        Gizmos.DrawLine(wallCheckPosition.position, wallCheckPosition.position + (Vector3)wallCheckDistance);
+        animator.CrossFade(animHash, 0);
     }
 
-    public void SetDirection(int direction)
-    {
-        this.facingDirection = direction;
-        this.transform.rotation = Quaternion.Euler(0, direction == 1 ? 0 : 180, 0);
-        this.wallCheckDistance.x = direction * Mathf.Abs(wallCheckDistance.x);
-    }
 }
