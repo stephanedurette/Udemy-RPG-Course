@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cc34b7efdabad14da34dd988e3c2282, type: 3}
   m_Name: Player Attack 3
   m_EditorClassIdentifier: 
-  AttackMovement: {x: 10, y: 5}
-  AttackAnimationString: playerAttack3
-  AttackDuration: 0.6
+  Movement: {x: 10, y: 5}
+  AnimationString: playerAttack3
+  Duration: 0.6
   MoveDuration: 0.3

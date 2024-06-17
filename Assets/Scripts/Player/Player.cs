@@ -116,7 +116,7 @@ public class Player : MonoBehaviour
 
     private void OnAttackStarted(AttackData data)
     {
-        SetVelocity(data.AttackMovement.x * PlayerSpriteFacing(), data.AttackMovement.y);
+        SetVelocity(data.Movement.x * PlayerSpriteFacing(), data.Movement.y);
     }
 
     public int PlayerSpriteFacing()

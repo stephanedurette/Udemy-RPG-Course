@@ -1,7 +1,6 @@
 REFACTOR
 
 -- Use new input system as scriptable object
--- embed attack move duration into all the attacks
 
 TUTORIAL
 

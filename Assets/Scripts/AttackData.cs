@@ -5,8 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "attack", menuName = "Scriptable Objects / Attack Data")]
 public class AttackData : ScriptableObject
 {
-    public Vector2 AttackMovement;
-    public string AttackAnimationString;
-    public float AttackDuration;
+    public Vector2 Movement;
+    public string AnimationString;
     public float MoveDuration;
 }
