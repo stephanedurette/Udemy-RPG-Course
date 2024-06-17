@@ -15,3 +15,4 @@ MonoBehaviour:
   AttackMovement: {x: 5, y: 3}
   AttackAnimationString: playerAttack2
   AttackDuration: 0.3
+  MoveDuration: 0.2

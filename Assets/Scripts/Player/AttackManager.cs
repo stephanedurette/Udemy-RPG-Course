@@ -12,7 +12,6 @@ public class AttackManager : MonoBehaviour
 
     [Header("Settings")]
     [SerializeField] private float attackNullInputDuration = .2f;
-    [SerializeField] private float attackMoveDuration = .1f;
 
     public bool IsAttacking {  get; private set; }
 
@@ -33,15 +32,10 @@ public class AttackManager : MonoBehaviour
     {
         attackTimer = new CountdownTimer(1);
         attackNullInputTimer = new CountdownTimer(attackNullInputDuration);
-        attackMoveDurationTimer = new CountdownTimer(attackMoveDuration);
+        attackMoveDurationTimer = new CountdownTimer(0);
 
         attackTimer.OnTimerStop += OnTimerStopped;
-        attackMoveDurationTimer.OnTimerStop += OnDurationTimerStopped;
-    }
-
-    private void OnDurationTimerStopped()
-    {
-        OnAttackFinished?.Invoke();
+        attackMoveDurationTimer.OnTimerStop += () => OnAttackFinished?.Invoke();
     }
 
     public void StartAttack()
@@ -67,7 +61,7 @@ public class AttackManager : MonoBehaviour
         attackNullInputTimer.Reset();
         attackNullInputTimer.Start();
 
-        attackMoveDurationTimer.Reset();
+        attackMoveDurationTimer.Reset(currentAttackData.MoveDuration);
         attackMoveDurationTimer.Start();
 
         OnAttackStarted?.Invoke(currentAttackData);
