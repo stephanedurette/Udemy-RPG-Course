@@ -757,6 +757,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 900ed1ee17b2f244dadd977fcc9bbc66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  inputReader: {fileID: 11400000, guid: 924a8322e8f875c45bf076707b8b2930, type: 2}
   attackCycle: {fileID: 11400000, guid: bd278e9dec06b994bb6d003b82ba9883, type: 2}
   animator: {fileID: 544457819}
 --- !u!1 &900676700

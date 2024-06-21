@@ -8,6 +8,7 @@ using UnityEngine;
 public class AttackManager : MonoBehaviour
 {
     [Header("References")]
+    [SerializeField] private InputReader inputReader;
     [SerializeField] private AttackCycle attackCycle;
     [SerializeField] private Animator animator;
 
@@ -80,9 +81,8 @@ public class AttackManager : MonoBehaviour
 
     public void Update()
     {
-        attackInput = Input.GetMouseButton(0);
 
-        if (attackTimer.IsRunning && attackInput && !attackNullInputTimer.IsRunning)
+        if (attackTimer.IsRunning && inputReader.Attacking && !attackNullInputTimer.IsRunning)
             attackQueued = true;
     }
 }
