@@ -12,6 +12,7 @@ public class Player : MonoBehaviour
     [SerializeField] private Rigidbody2D rigidBody;
     [SerializeField] private Transform rotatePivot;
     [SerializeField] private AttackManager attackManager;
+    [SerializeField] private InputReader inputReader;
 
     [Header("Collision Check References")]
     [SerializeField] private BoxCaster groundChecker;
@@ -28,12 +29,6 @@ public class Player : MonoBehaviour
     public float dashCooldown;
 
     private StateMachine stateMachine;
-
-    //input states
-    private Vector2 InputVector;
-    private bool JumpInput;
-    private bool DashInput;
-    private bool AttackInput;
 
     //timers
     public CountdownTimer dashDurationTimer;
@@ -63,14 +58,14 @@ public class Player : MonoBehaviour
         var attackingState = new PlayerAttackingState(this);
 
         //Jump
-        stateMachine.AddTransition(movingState, jumpingState, new FuncPredicate(() => JumpInput && groundChecker.IsColliding));
-        stateMachine.AddTransition(wallslidingState, jumpingState, new FuncPredicate(() => JumpInput ));
-        stateMachine.AddTransition(fallingState, jumpingState, new FuncPredicate(() => JumpInput && coyoteTimer.IsRunning));
+        stateMachine.AddTransition(movingState, jumpingState, new FuncPredicate(() => inputReader.Jumping && groundChecker.IsColliding));
+        stateMachine.AddTransition(wallslidingState, jumpingState, new FuncPredicate(() => inputReader.Jumping));
+        stateMachine.AddTransition(fallingState, jumpingState, new FuncPredicate(() => inputReader.Jumping && coyoteTimer.IsRunning));
 
         //Fall
         stateMachine.AddTransition(jumpingState, fallingState, new FuncPredicate(() => rigidBody.velocity.y < 0));
         stateMachine.AddTransition(movingState, fallingState, new FuncPredicate(() => rigidBody.velocity.y < 0 && !groundChecker.IsColliding));
-        stateMachine.AddTransition(wallslidingState, fallingState, new FuncPredicate(() => InputVector.x == -WallDirection()));
+        stateMachine.AddTransition(wallslidingState, fallingState, new FuncPredicate(() => inputReader.MoveDirection.x == -WallDirection()));
         stateMachine.AddTransition(dashingState, fallingState, new FuncPredicate(() => !dashDurationTimer.IsRunning));
 
         //Wallslide
@@ -82,10 +77,10 @@ public class Player : MonoBehaviour
         stateMachine.AddTransition(attackingState, movingState, new FuncPredicate(() => !attackManager.IsAttacking));
 
         //Dashing
-        stateMachine.AddAnyTransition(dashingState, new FuncPredicate(() => DashInput && !dashDurationTimer.IsRunning && !dashCooldownTimer.IsRunning));
+        stateMachine.AddAnyTransition(dashingState, new FuncPredicate(() => inputReader.Dashing && !dashDurationTimer.IsRunning && !dashCooldownTimer.IsRunning));
 
         //Attacking
-        stateMachine.AddTransition(movingState, attackingState, new FuncPredicate(() => AttackInput && !attackManager.IsAttacking));
+        stateMachine.AddTransition(movingState, attackingState, new FuncPredicate(() => inputReader.Attacking && !attackManager.IsAttacking));
 
         stateMachine.SetState(movingState);
     }
@@ -165,7 +160,7 @@ public class Player : MonoBehaviour
     private bool WallSlidePredicate()
     {
         bool collidingWithWall = IsCollidingWithWall();
-        bool inputTowardsWall = (InputVector.x != -WallDirection());
+        bool inputTowardsWall = (inputReader.MoveDirection.x != -WallDirection());
 
         return collidingWithWall && inputTowardsWall;
     }
@@ -179,7 +174,7 @@ public class Player : MonoBehaviour
 
     public void HandleWallSlide()
     {
-        float speedMultiplier = InputVector.y < 0 ? 1 : 0.8f;
+        float speedMultiplier = inputReader.MoveDirection.y < 0 ? 1 : 0.8f;
         SetVelocity(0 , rigidBody.velocity.y * speedMultiplier);
     }
 
@@ -203,19 +198,19 @@ public class Player : MonoBehaviour
 
     public void HandleMovement()
     {
-        SetXVelocity(InputVector.x * moveSpeed);
+        SetXVelocity(inputReader.MoveDirection.x * moveSpeed);
 
-        if (InputVector.x != 0)
-            SetFacing((int)InputVector.x);
+        if (inputReader.MoveDirection.x != 0)
+            SetFacing((int)inputReader.MoveDirection.x);
     }
 
     public void HandleAirMovement()
     {
-        if (InputVector.x != 0)
-            SetXVelocity(InputVector.x * moveSpeed);
+        if (inputReader.MoveDirection.x != 0)
+            SetXVelocity(inputReader.MoveDirection.x * moveSpeed);
 
-        if (InputVector.x != 0)
-            SetFacing((int)InputVector.x);
+        if (inputReader.MoveDirection.x != 0)
+            SetFacing((int)inputReader.MoveDirection.x);
     }
 
     private void SetFacing(int dir)
@@ -224,14 +219,6 @@ public class Player : MonoBehaviour
         Quaternion facingLeftRotation = Quaternion.Euler(180 * Vector3.up);
 
         rotatePivot.rotation = dir == 1 ? facingRightRotation : facingLeftRotation;
-    }
-
-    public void UpdateInputs()
-    {
-        InputVector = new Vector2 (Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-        AttackInput = Input.GetMouseButton(0);
-        JumpInput = Input.GetKey(KeyCode.Space);
-        DashInput = Input.GetKey(KeyCode.LeftShift);
     }
 
     public void UpdateAnimatorVelocity()

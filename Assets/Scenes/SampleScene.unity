@@ -259,6 +259,7 @@ MonoBehaviour:
   rigidBody: {fileID: 106138542}
   rotatePivot: {fileID: 1269007877}
   attackManager: {fileID: 854169580}
+  inputReader: {fileID: 11400000, guid: 924a8322e8f875c45bf076707b8b2930, type: 2}
   groundChecker: {fileID: 1960014104}
   rightWallChecker: {fileID: 1324665740}
   leftWallChecker: {fileID: 1003563594}
@@ -756,8 +757,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackCycle: {fileID: 11400000, guid: bd278e9dec06b994bb6d003b82ba9883, type: 2}
   animator: {fileID: 544457819}
-  attackNullInputDuration: 0.2
-  attackMoveDuration: 0.1
 --- !u!1 &900676700
 GameObject:
   m_ObjectHideFlags: 0

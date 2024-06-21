@@ -35,7 +35,6 @@ public class PlayerBaseState : IState
 
     public virtual void Update()
     {
-        player.UpdateInputs();
         player.UpdateAnimatorVelocity();
     }
 }
