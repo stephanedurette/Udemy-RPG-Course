@@ -265,6 +265,8 @@ MonoBehaviour:
   leftWallChecker: {fileID: 1003563594}
   moveSpeed: 8
   jumpForce: 15
+  maxAirVelocity: 10
+  airAccel: 40
   dashSpeed: 20
   dashDuration: 0.25
   dashCooldown: 0.25

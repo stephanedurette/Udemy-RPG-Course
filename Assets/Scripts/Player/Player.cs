@@ -23,6 +23,11 @@ public class Player : MonoBehaviour
     public float moveSpeed = 12f;
     public float jumpForce = 8f;
 
+    [Header("Air Move Settings")]
+    public float maxAirVelocity = 20f;
+    public float airAccel = 1f;
+
+
     [Header("Dash Settings")]
     public float dashSpeed;
     public float dashDuration;
@@ -180,13 +185,16 @@ public class Player : MonoBehaviour
 
     public void StartDash()
     {
+        int dashDirection = (int)inputReader.MoveDirection.x == 0 ? PlayerSpriteFacing() : (int)inputReader.MoveDirection.x;
+
+
         int spriteFacing = PlayerSpriteFacing();
 
         startingGravityScale = rigidBody.gravityScale;
         rigidBody.gravityScale = 0;
 
-        SetVelocity(spriteFacing * dashSpeed, 0);
-        SetFacing(spriteFacing);
+        SetVelocity(dashDirection * dashSpeed, 0);
+        SetFacing(dashDirection);
         dashDurationTimer.Start();
     }
 
@@ -206,11 +214,11 @@ public class Player : MonoBehaviour
 
     public void HandleAirMovement()
     {
-        if (inputReader.MoveDirection.x != 0)
-            SetXVelocity(inputReader.MoveDirection.x * moveSpeed);
+        float newXVelocity = Mathf.Clamp(rigidBody.velocity.x + airAccel * inputReader.MoveDirection.x * Time.deltaTime, -maxAirVelocity, maxAirVelocity);
 
-        if (inputReader.MoveDirection.x != 0)
-            SetFacing((int)inputReader.MoveDirection.x);
+        SetXVelocity(newXVelocity);
+
+        SetFacing(Math.Sign(newXVelocity));
     }
 
     private void SetFacing(int dir)
