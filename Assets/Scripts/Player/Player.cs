@@ -187,9 +187,6 @@ public class Player : MonoBehaviour
     {
         int dashDirection = (int)inputReader.MoveDirection.x == 0 ? PlayerSpriteFacing() : (int)inputReader.MoveDirection.x;
 
-
-        int spriteFacing = PlayerSpriteFacing();
-
         startingGravityScale = rigidBody.gravityScale;
         rigidBody.gravityScale = 0;
 
