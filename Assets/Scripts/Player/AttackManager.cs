@@ -21,8 +21,6 @@ public class AttackManager : MonoBehaviour
 
     private bool attackQueued;
 
-    private bool attackInput;
-
     private CountdownTimer attackTimer;
     private CountdownTimer attackNullInputTimer;
     private CountdownTimer attackMoveDurationTimer;
