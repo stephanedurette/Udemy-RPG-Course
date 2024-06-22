@@ -45,14 +45,23 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        //Timers
+        SetupTimers();
+        SetupStateMachine();
+    }
+
+    bool WasWallSliding() => rigidBody.velocity.y < 0 && IsCollidingWithWall();
+
+    private void SetupTimers()
+    {
         dashDurationTimer = new CountdownTimer(dashDuration);
         dashCooldownTimer = new CountdownTimer(dashCooldown);
         coyoteTimer = new CountdownTimer(0.2f);
 
         dashDurationTimer.OnTimerStop += () => dashCooldownTimer.Start();
+    }
 
-        //State Machine
+    private void SetupStateMachine()
+    {
         stateMachine = new StateMachine();
 
         var movingState = new PlayerMovementState(this);
@@ -90,13 +99,6 @@ public class Player : MonoBehaviour
         stateMachine.SetState(movingState);
     }
 
-    bool WasWallSliding() => rigidBody.velocity.y < 0 && IsCollidingWithWall();
-
-    private void Start()
-    {
-
-    }
-
     private void OnEnable()
     {
         attackManager.OnAttackStarted += OnAttackStarted;
@@ -116,10 +118,10 @@ public class Player : MonoBehaviour
 
     private void OnAttackStarted(AttackData data)
     {
-        SetVelocity(data.Movement.x * PlayerSpriteFacing(), data.Movement.y);
+        SetVelocity(data.Movement.x * SpriteFacing(), data.Movement.y);
     }
 
-    public int PlayerSpriteFacing()
+    public int SpriteFacing()
     {
         if (WasWallSliding())
         {
@@ -185,7 +187,7 @@ public class Player : MonoBehaviour
 
     public void StartDash()
     {
-        int dashDirection = (int)inputReader.MoveDirection.x == 0 ? PlayerSpriteFacing() : (int)inputReader.MoveDirection.x;
+        int dashDirection = (int)inputReader.MoveDirection.x == 0 ? SpriteFacing() : (int)inputReader.MoveDirection.x;
 
         startingGravityScale = rigidBody.gravityScale;
         rigidBody.gravityScale = 0;
