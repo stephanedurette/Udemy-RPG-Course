@@ -28,6 +28,7 @@ public class Skeleton : MonoBehaviour
     [Header("Attack Settings")]
     [SerializeField] private float attackCooldown = .4f;
     [SerializeField] private float chaseCooldown = 2f;
+    [SerializeField] private float playerExitCombatDistance = 7f;
 
     protected readonly int IdleAnimHash = Animator.StringToHash("Idle");
     protected readonly int WalkingAnimHash = Animator.StringToHash("Walk");
@@ -65,7 +66,10 @@ public class Skeleton : MonoBehaviour
 
         //to idle
         stateMachine.AddTransition(walking, idle, new FuncPredicate(() => !groundChecker.IsColliding || wallChecker.IsColliding));
-        stateMachine.AddTransition(chasing, idle, new FuncPredicate(() => (!canSeePlayer.IsColliding && !chaseCooldownTimer.IsRunning) || !groundChecker.IsColliding));
+
+        stateMachine.AddTransition(chasing, idle, new FuncPredicate(() => (!canSeePlayer.IsColliding && !chaseCooldownTimer.IsRunning)));
+        stateMachine.AddTransition(chasing, idle, new FuncPredicate(() => !groundChecker.IsColliding));
+        stateMachine.AddTransition(chasing, idle, new FuncPredicate(() => (Vector2.Distance(transform.position, Player.Instance.transform.position) >= playerExitCombatDistance) && !canSeePlayer.IsColliding));
 
         //to chase
         stateMachine.AddTransition(idle, chasing, new FuncPredicate(() => canSeePlayer.IsColliding && groundChecker.IsColliding));
