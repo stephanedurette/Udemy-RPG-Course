@@ -27,6 +27,7 @@ public class Skeleton : MonoBehaviour
 
     [Header("Attack Settings")]
     [SerializeField] private float attackCooldown = .4f;
+    [SerializeField] private float chaseCooldown = 2f;
 
     protected readonly int IdleAnimHash = Animator.StringToHash("Idle");
     protected readonly int WalkingAnimHash = Animator.StringToHash("Walk");
@@ -35,7 +36,7 @@ public class Skeleton : MonoBehaviour
 
     private StateMachine stateMachine;
 
-    private CountdownTimer idleTimer, attackCooldownTimer;
+    private CountdownTimer idleTimer, attackCooldownTimer, chaseCooldownTimer;
 
     private void Awake()
     {
@@ -47,6 +48,7 @@ public class Skeleton : MonoBehaviour
     {
         idleTimer = new CountdownTimer(idleTime);
         attackCooldownTimer = new CountdownTimer(attackCooldown);
+        chaseCooldownTimer = new CountdownTimer(chaseCooldown);
     }
 
     private void SetupStateMachine()
@@ -63,9 +65,10 @@ public class Skeleton : MonoBehaviour
 
         //to idle
         stateMachine.AddTransition(walking, idle, new FuncPredicate(() => !groundChecker.IsColliding || wallChecker.IsColliding));
+        stateMachine.AddTransition(chasing, idle, new FuncPredicate(() => (!canSeePlayer.IsColliding && !chaseCooldownTimer.IsRunning) || !groundChecker.IsColliding));
 
         //to chase
-        stateMachine.AddTransition(idle, chasing, new FuncPredicate(() => canSeePlayer.IsColliding));
+        stateMachine.AddTransition(idle, chasing, new FuncPredicate(() => canSeePlayer.IsColliding && groundChecker.IsColliding));
         stateMachine.AddTransition(walking, chasing, new FuncPredicate(() => canSeePlayer.IsColliding));
         stateMachine.AddTransition(attacking, chasing, new ActionInvokedPredicate(ref animatorEvents.OnAnimationFinished));
 
@@ -90,7 +93,7 @@ public class Skeleton : MonoBehaviour
     {
         animator.Play(IdleAnimHash);
         SetXVelocity(0);
-        idleTimer.Reset(idleTime);
+        idleTimer.Reset();
         idleTimer.Start();
     }
 
@@ -108,7 +111,8 @@ public class Skeleton : MonoBehaviour
 
     public void EnterChaseState()
     {
-        
+        chaseCooldownTimer.Reset();
+        chaseCooldownTimer.Start();
     }
 
     public void UpdateChaseState()
@@ -128,7 +132,7 @@ public class Skeleton : MonoBehaviour
     public void EnterAttackState()
     {
         animator.Play(AttackingAnimHash);
-        attackCooldownTimer.Reset(attackCooldown);
+        attackCooldownTimer.Reset();
         attackCooldownTimer.Start();
         SetXVelocity(0);
     }
