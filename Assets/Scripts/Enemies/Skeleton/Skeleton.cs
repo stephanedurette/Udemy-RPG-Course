@@ -10,9 +10,13 @@ public class Skeleton : MonoBehaviour
     [SerializeField] private Rigidbody2D rigidBody;
     [SerializeField] private Transform rotatePivot;
 
-    [Header("Collision Check References")]
+    [Header("Wall Collision Check References")]
     [SerializeField] private BoxCaster groundChecker;
     [SerializeField] private BoxCaster wallChecker;
+
+    [Header("Player Detection Check References")]
+    [SerializeField] private RayCaster canSeePlayer;
+    [SerializeField] private BoxCaster playerInRange;
 
     [Header("Move Settings")]
     [SerializeField] private float moveSpeed = 12f;
@@ -79,6 +83,7 @@ public class Skeleton : MonoBehaviour
     public void ExitWalkingState()
     {
         SetFacing(-GetFacing());
+        canSeePlayer.Direction = -canSeePlayer.Direction;
     }
 
     private void SetFacing(int dir)

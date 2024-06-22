@@ -27,6 +27,7 @@ public class Player : MonoBehaviour
     public float maxAirVelocity = 20f;
     public float airAccel = 1f;
 
+    public static Player Instance;
 
     [Header("Dash Settings")]
     public float dashSpeed;
@@ -45,6 +46,8 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        Instance = this;
+
         SetupTimers();
         SetupStateMachine();
     }
