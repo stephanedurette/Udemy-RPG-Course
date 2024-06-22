@@ -15,7 +15,7 @@ public class SkeletonChaseState : SkeletonBaseState
 
     public override void OnEnter()
     {
-        skeleton.PlayAnimation(ChasingAnimHash);
+        skeleton.EnterChaseState();
     }
 
     public override void OnExit()

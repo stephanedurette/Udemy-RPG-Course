@@ -14,7 +14,6 @@ public class SkeletonWalkingState : SkeletonBaseState
 
     public override void OnEnter()
     {
-        skeleton.PlayAnimation(WalkingAnimHash);
         skeleton.EnterWalkingState();
     }
 

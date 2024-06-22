@@ -15,7 +15,6 @@ public class SkeletonIdleState : SkeletonBaseState
 
     public override void OnEnter()
     {
-        skeleton.PlayAnimation(IdleAnimHash);
         skeleton.EnterIdleState();
     }
 

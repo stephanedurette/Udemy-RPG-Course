@@ -24,9 +24,17 @@ public class Skeleton : MonoBehaviour
     [SerializeField] private float chaseSpeed = 12f;
     [SerializeField] private float idleTime = 1f;
 
+    [Header("Attack Settings")]
+    [SerializeField] private float attackCooldown = .4f;
+
+    protected readonly int IdleAnimHash = Animator.StringToHash("Idle");
+    protected readonly int WalkingAnimHash = Animator.StringToHash("Walk");
+    protected readonly int ChasingAnimHash = Animator.StringToHash("Chase");
+    protected readonly int AttackingAnimHash = Animator.StringToHash("Attack");
+
     private StateMachine stateMachine;
 
-    private CountdownTimer idleTimer;
+    private CountdownTimer idleTimer, attackCooldownTimer;
 
     private void Awake()
     {
@@ -37,6 +45,7 @@ public class Skeleton : MonoBehaviour
     private void SetupTimers()
     {
         idleTimer = new CountdownTimer(idleTime);
+        attackCooldownTimer = new CountdownTimer(attackCooldown);
     }
 
     private void SetupStateMachine()
@@ -57,17 +66,13 @@ public class Skeleton : MonoBehaviour
         //to chase
         stateMachine.AddTransition(idle, chasing, new FuncPredicate(() => canSeePlayer.IsColliding));
         stateMachine.AddTransition(walking, chasing, new FuncPredicate(() => canSeePlayer.IsColliding));
+        stateMachine.AddTransition(attacking, chasing, new FuncPredicate(() => !animator.IsPlaying("Attack")));
 
         //to attack
-        stateMachine.AddTransition(chasing, attacking, new FuncPredicate(() => playerInRange.IsColliding));
+        stateMachine.AddTransition(chasing, attacking, new FuncPredicate(() => playerInRange.IsColliding && !attackCooldownTimer.IsRunning));
 
 
         stateMachine.SetState(idle);
-    }
-
-    public void PlayAnimation(int hash)
-    {
-        animator.Play(hash);
     }
 
     private void Update()
@@ -82,6 +87,7 @@ public class Skeleton : MonoBehaviour
 
     public void EnterIdleState()
     {
+        animator.Play(IdleAnimHash);
         SetXVelocity(0);
         idleTimer.Reset(idleTime);
         idleTimer.Start();
@@ -89,6 +95,7 @@ public class Skeleton : MonoBehaviour
 
     public void EnterWalkingState()
     {
+        animator.Play(WalkingAnimHash);
         SetXVelocity(moveSpeed * GetFacing());
     }
 
@@ -98,13 +105,19 @@ public class Skeleton : MonoBehaviour
         canSeePlayer.Direction = -canSeePlayer.Direction;
     }
 
+    public void EnterChaseState()
+    {
+        
+    }
+
     public void UpdateChaseState()
     {
         int facing = GetFacing();
         int targetFacingDirection = (int)Mathf.Sign(Player.Instance.transform.position.x - transform.position.x);
 
         SetFacing(targetFacingDirection);
-        SetXVelocity(chaseSpeed * GetFacing());
+        SetXVelocity(playerInRange.IsColliding ? 0 : chaseSpeed * GetFacing());
+        animator.Play(playerInRange.IsColliding ? IdleAnimHash : ChasingAnimHash);
 
         if (targetFacingDirection != facing) {
             canSeePlayer.Direction = -canSeePlayer.Direction;
@@ -113,6 +126,9 @@ public class Skeleton : MonoBehaviour
 
     public void EnterAttackState()
     {
+        animator.Play(AttackingAnimHash);
+        attackCooldownTimer.Reset(attackCooldown);
+        attackCooldownTimer.Start();
         SetXVelocity(0);
     }
 

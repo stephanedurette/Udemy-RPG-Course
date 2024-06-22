@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
 
 public static class MyExtensions
@@ -48,5 +49,15 @@ public static class MyExtensions
         v.x = (cos * tx) - (sin * ty);
         v.y = (sin * tx) + (cos * ty);
         return v;
+    }
+
+    public static bool IsPlaying(this Animator animator)
+    {
+        return animator.GetCurrentAnimatorStateInfo(0).length > animator.GetCurrentAnimatorStateInfo(0).normalizedTime;
+    }
+
+    public static bool IsPlaying(this Animator animator, string animationName)
+    {
+        return animator.IsPlaying() && animator.GetCurrentAnimatorStateInfo(0).IsName(animationName);
     }
 }

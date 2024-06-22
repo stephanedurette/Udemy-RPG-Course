@@ -442,6 +442,7 @@ MonoBehaviour:
   moveSpeed: 2
   chaseSpeed: 4
   idleTime: 1
+  attackCooldown: 2
 --- !u!1 &106138539
 GameObject:
   m_ObjectHideFlags: 0
