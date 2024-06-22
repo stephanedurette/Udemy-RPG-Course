@@ -182,6 +182,11 @@ public class Player : MonoBehaviour
         return 0;
     }
 
+    public void EnterWallSlide()
+    {
+        SetFacing(WallDirection());
+    }
+
     public void HandleWallSlide()
     {
         float speedMultiplier = inputReader.MoveDirection.y < 0 ? 1 : 0.8f;
@@ -220,7 +225,8 @@ public class Player : MonoBehaviour
 
         SetXVelocity(newXVelocity);
 
-        SetFacing(Math.Sign(newXVelocity));
+        if (newXVelocity != 0)
+            SetFacing(Math.Sign(newXVelocity));
     }
 
     private void SetFacing(int dir)

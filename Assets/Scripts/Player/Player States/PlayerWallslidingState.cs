@@ -16,6 +16,7 @@ public class PlayerWallslidingState : PlayerBaseState
     public override void OnEnter()
     {
         player.StartAnimation(WallslidingAnimHash);
+        player.EnterWallSlide();
     }
 
     public override void OnExit()
