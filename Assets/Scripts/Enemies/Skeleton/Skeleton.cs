@@ -8,6 +8,7 @@ public class Skeleton : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Animator animator;
+    [SerializeField] private AnimatorEvents animatorEvents;
     [SerializeField] private Rigidbody2D rigidBody;
     [SerializeField] private Transform rotatePivot;
 
@@ -66,7 +67,7 @@ public class Skeleton : MonoBehaviour
         //to chase
         stateMachine.AddTransition(idle, chasing, new FuncPredicate(() => canSeePlayer.IsColliding));
         stateMachine.AddTransition(walking, chasing, new FuncPredicate(() => canSeePlayer.IsColliding));
-        stateMachine.AddTransition(attacking, chasing, new FuncPredicate(() => !animator.IsPlaying("Attack")));
+        stateMachine.AddTransition(attacking, chasing, new ActionInvokedPredicate(ref animatorEvents.OnAnimationFinished));
 
         //to attack
         stateMachine.AddTransition(chasing, attacking, new FuncPredicate(() => playerInRange.IsColliding && !attackCooldownTimer.IsRunning));
