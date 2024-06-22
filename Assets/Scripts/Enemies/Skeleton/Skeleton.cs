@@ -125,7 +125,7 @@ public class Skeleton : MonoBehaviour
         int targetFacingDirection = (int)Mathf.Sign(Player.Instance.transform.position.x - transform.position.x);
 
         SetFacing(targetFacingDirection);
-        SetXVelocity(playerInRange.IsColliding ? 0 : chaseSpeed * GetFacing());
+        SetXVelocity(playerInRange.IsColliding ? 0 : chaseSpeed * facing);
         animator.Play(playerInRange.IsColliding ? IdleAnimHash : ChasingAnimHash);
 
         if (targetFacingDirection != facing) {
