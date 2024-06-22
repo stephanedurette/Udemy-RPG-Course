@@ -325,7 +325,7 @@ GameObject:
   - component: {fileID: 43685098}
   - component: {fileID: 43685099}
   - component: {fileID: 43685100}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Enemy Skeleton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -440,6 +440,7 @@ MonoBehaviour:
   canSeePlayer: {fileID: 277297877}
   playerInRange: {fileID: 264867714}
   moveSpeed: 2
+  chaseSpeed: 4
   idleTime: 1
 --- !u!1 &106138539
 GameObject:

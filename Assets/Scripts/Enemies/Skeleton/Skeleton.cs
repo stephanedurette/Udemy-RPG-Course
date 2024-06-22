@@ -1,4 +1,5 @@
 using ImprovedTimers;
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,6 +21,7 @@ public class Skeleton : MonoBehaviour
 
     [Header("Move Settings")]
     [SerializeField] private float moveSpeed = 12f;
+    [SerializeField] private float chaseSpeed = 12f;
     [SerializeField] private float idleTime = 1f;
 
     private StateMachine stateMachine;
@@ -43,12 +45,22 @@ public class Skeleton : MonoBehaviour
 
         SkeletonIdleState idle = new SkeletonIdleState(this);
         SkeletonWalkingState walking = new SkeletonWalkingState(this);
+        SkeletonChaseState chasing = new SkeletonChaseState(this);
+        SkeletonAttackState attacking = new SkeletonAttackState(this);
 
         //to walking
         stateMachine.AddTransition(idle, walking, new FuncPredicate(() => !idleTimer.IsRunning));
 
         //to idle
         stateMachine.AddTransition(walking, idle, new FuncPredicate(() => !groundChecker.IsColliding || wallChecker.IsColliding));
+
+        //to chase
+        stateMachine.AddTransition(idle, chasing, new FuncPredicate(() => canSeePlayer.IsColliding));
+        stateMachine.AddTransition(walking, chasing, new FuncPredicate(() => canSeePlayer.IsColliding));
+
+        //to attack
+        stateMachine.AddTransition(chasing, attacking, new FuncPredicate(() => playerInRange.IsColliding));
+
 
         stateMachine.SetState(idle);
     }
@@ -84,6 +96,24 @@ public class Skeleton : MonoBehaviour
     {
         SetFacing(-GetFacing());
         canSeePlayer.Direction = -canSeePlayer.Direction;
+    }
+
+    public void UpdateChaseState()
+    {
+        int facing = GetFacing();
+        int targetFacingDirection = (int)Mathf.Sign(Player.Instance.transform.position.x - transform.position.x);
+
+        SetFacing(targetFacingDirection);
+        SetXVelocity(chaseSpeed * GetFacing());
+
+        if (targetFacingDirection != facing) {
+            canSeePlayer.Direction = -canSeePlayer.Direction;
+        }
+    }
+
+    public void EnterAttackState()
+    {
+        SetXVelocity(0);
     }
 
     private void SetFacing(int dir)

@@ -6,6 +6,7 @@ public class SkeletonBaseState : IState
 {
     protected readonly int IdleAnimHash = Animator.StringToHash("Idle");
     protected readonly int WalkingAnimHash = Animator.StringToHash("Walk");
+    protected readonly int ChasingAnimHash = Animator.StringToHash("Chase");
 
     protected Skeleton skeleton;
 
