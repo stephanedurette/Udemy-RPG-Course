@@ -5,5 +5,5 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "attackcycle", menuName = "ScriptableObjects/AttackCycle")]
 public class AttackCycle : ScriptableObject
 {
-    public List<AttackData> Attacks;
+    public List<Attack> Attacks;
 }

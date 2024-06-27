@@ -46,7 +46,11 @@ public class AttackManager : MonoBehaviour
         attackQueued = false;
         IsAttacking = true;
 
-        AttackData currentAttackData = attackCycle.Attacks[currentAttackIndex];
+        AttackData currentAttackData = attackCycle.Attacks[currentAttackIndex].AttackData;
+
+        GameObject attackObject = Instantiate(attackCycle.Attacks[currentAttackIndex].gameObject);
+        attackObject.transform.SetParent(transform, false);
+        attackObject.transform.localPosition = Vector3.zero;
 
         currentAttackIndex = (currentAttackIndex + 1) % attackCycle.Attacks.Count;
 

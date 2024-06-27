@@ -14,6 +14,7 @@ public class Attack : MonoBehaviour
     private CountdownTimer[] hitboxSpawnTimers;
     private CountdownTimer[] hitboxLifetimeTimers;
 
+    public AttackData AttackData => attackData;
     
     private void Awake()
     {
@@ -31,9 +32,6 @@ public class Attack : MonoBehaviour
 
             hitboxSpawnTimers[i] = new CountdownTimer(hitBoxes[i].Data.SpawnDelay);
             hitboxLifetimeTimers[i] = new CountdownTimer(hitBoxes[i].Data.LifeTime);
-
-            Debug.Log(i);
-            Debug.Log(index);
 
             hitboxSpawnTimers[i].OnTimerStop += () => SpawnHitbox(index);
             hitboxLifetimeTimers[i].OnTimerStop += () => DespawnHitbox(index);

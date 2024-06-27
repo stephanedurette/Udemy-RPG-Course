@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Player Attack Cycle
   m_EditorClassIdentifier: 
   Attacks:
-  - {fileID: 11400000, guid: a3299b7ba0d99ee4f9f2e426d57f0db4, type: 2}
-  - {fileID: 11400000, guid: 9c7dec9e1c526014ba60b169470ff674, type: 2}
-  - {fileID: 11400000, guid: 48bdef02fc292a04c8fd716368724489, type: 2}
+  - {fileID: 566379375961525526, guid: eaaa9b3f436649c4cb5bd590b45498ce, type: 3}
+  - {fileID: 2618828032658416116, guid: 55d8d6a76aa0f7c40b467d406d94ad8d, type: 3}
+  - {fileID: 6087123701686037293, guid: f6dd59ce66358a448ba3fccc117a30c6, type: 3}
