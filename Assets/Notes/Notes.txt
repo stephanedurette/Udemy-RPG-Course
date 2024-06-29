@@ -3,6 +3,5 @@ REFACTOR
 TUTORIAL
 
 - combo system implement, refactor attack manager
-- player states use partial classes?
 
 -- I'm on 48 in the tutorial

@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Player Attack 2
   m_EditorClassIdentifier: 
   Movement: {x: 5, y: 3}
-  AnimationString: playerAttack2
-  Duration: 0.3
   MoveDuration: 0.1
+  AnimationString: playerAttack2
+  attackPrefab: {fileID: 6438566718079796582, guid: 55d8d6a76aa0f7c40b467d406d94ad8d, type: 3}

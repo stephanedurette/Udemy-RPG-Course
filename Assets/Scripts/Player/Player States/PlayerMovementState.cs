@@ -20,7 +20,7 @@ public class PlayerMovementState : PlayerBaseState
 
     public override void OnExit()
     {
-        player.coyoteTimer.Start();
+        player.ExitMovementState();
     }
 
     public override void Update()

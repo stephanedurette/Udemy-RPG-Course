@@ -492,7 +492,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1269007877}
-  - {fileID: 854169579}
   - {fileID: 1732501853}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -511,8 +510,8 @@ MonoBehaviour:
   animator: {fileID: 544457819}
   rigidBody: {fileID: 106138542}
   rotatePivot: {fileID: 1269007877}
-  attackManager: {fileID: 854169580}
   inputReader: {fileID: 11400000, guid: 924a8322e8f875c45bf076707b8b2930, type: 2}
+  attackParent: {fileID: 854169579}
   groundChecker: {fileID: 1960014104}
   rightWallChecker: {fileID: 1324665740}
   leftWallChecker: {fileID: 1003563594}
@@ -523,6 +522,11 @@ MonoBehaviour:
   dashSpeed: 20
   dashDuration: 0.25
   dashCooldown: 0.25
+  attackQueueNullInputDuration: 0.1
+  Attack1: {fileID: 11400000, guid: a3299b7ba0d99ee4f9f2e426d57f0db4, type: 2}
+  Attack2: {fileID: 11400000, guid: 9c7dec9e1c526014ba60b169470ff674, type: 2}
+  Attack3: {fileID: 11400000, guid: 48bdef02fc292a04c8fd716368724489, type: 2}
+  CurrentAttackData: {fileID: 0}
 --- !u!50 &106138542
 Rigidbody2D:
   serializedVersion: 4
@@ -1106,9 +1110,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 854169579}
-  - component: {fileID: 854169580}
   m_Layer: 0
-  m_Name: AttackManager
+  m_Name: AttackParent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1122,28 +1125,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 854169578}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 106138540}
+  m_Father: {fileID: 1269007877}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &854169580
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 854169578}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 900ed1ee17b2f244dadd977fcc9bbc66, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  inputReader: {fileID: 11400000, guid: 924a8322e8f875c45bf076707b8b2930, type: 2}
-  attackCycle: {fileID: 11400000, guid: bd278e9dec06b994bb6d003b82ba9883, type: 2}
-  animator: {fileID: 544457819}
 --- !u!1 &900676700
 GameObject:
   m_ObjectHideFlags: 0
@@ -1353,6 +1341,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 854169579}
   - {fileID: 1851295744}
   m_Father: {fileID: 106138540}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

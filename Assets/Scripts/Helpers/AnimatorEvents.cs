@@ -8,9 +8,15 @@ using UnityEngine.Events;
 public class AnimatorEvents : MonoBehaviour
 {
     public Action OnAnimationFinished;
-   
+    public Action<Attack> OnAttackStarted;
+
     public void FinishAnimation()
     {
         OnAnimationFinished?.Invoke();
+    }
+
+    public void StartAttack(Attack attack)
+    {
+        OnAttackStarted?.Invoke(attack);
     }
 }

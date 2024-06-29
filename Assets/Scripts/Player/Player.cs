@@ -2,8 +2,10 @@ using ImprovedTimers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
@@ -11,8 +13,8 @@ public class Player : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private Rigidbody2D rigidBody;
     [SerializeField] private Transform rotatePivot;
-    [SerializeField] private AttackManager attackManager;
     [SerializeField] private InputReader inputReader;
+    [SerializeField] private Transform attackParent;
 
     [Header("Collision Check References")]
     [SerializeField] private BoxCaster groundChecker;
@@ -34,16 +36,30 @@ public class Player : MonoBehaviour
     public float dashDuration;
     public float dashCooldown;
 
+    [Header("Attack Settings")]
+    [SerializeField] private float attackQueueNullInputDuration = .1f;
+    public AttackData Attack1;
+    public AttackData Attack2;
+    public AttackData Attack3;
+
     private StateMachine stateMachine;
 
     //timers
-    public CountdownTimer dashDurationTimer;
-    public CountdownTimer coyoteTimer;
-    CountdownTimer dashCooldownTimer;
+    private CountdownTimer dashDurationTimer;
+    private CountdownTimer coyoteTimer;
+    private CountdownTimer dashCooldownTimer;
+
+    private CountdownTimer attackDurationTimer;
+    private CountdownTimer attackMoveDurationTimer;
+    private CountdownTimer attackNullInputTimer;
 
     private float startingGravityScale;
+    private bool nextAttackQueued;
 
-    IState movingState, jumpingState, fallingState, wallslidingState, dashingState, attackingState;
+    [HideInInspector] public AttackData CurrentAttackData;
+
+    IState movingState, jumpingState, fallingState, wallslidingState, dashingState;
+    IState attack1State, attack2State, attack3State;
 
     // Start is called before the first frame update
     void Awake()
@@ -60,6 +76,10 @@ public class Player : MonoBehaviour
         dashCooldownTimer = new CountdownTimer(dashCooldown);
         coyoteTimer = new CountdownTimer(0.2f);
 
+        attackDurationTimer = new CountdownTimer(0);
+        attackMoveDurationTimer = new CountdownTimer(0);
+        attackNullInputTimer = new CountdownTimer(attackQueueNullInputDuration);
+
         dashDurationTimer.OnTimerStop += () => dashCooldownTimer.Start();
     }
 
@@ -72,7 +92,10 @@ public class Player : MonoBehaviour
         fallingState = new PlayerFallingState(this);
         wallslidingState = new PlayerWallslidingState(this);
         dashingState = new PlayerDashingState(this);
-        attackingState = new PlayerAttackingState(this);
+
+        attack1State = new PlayerAttack_1(this);
+        attack2State = new PlayerAttack_2(this);
+        attack3State = new PlayerAttack_3(this);
 
         //Jump
         stateMachine.AddTransition(movingState, jumpingState, new FuncPredicate(() => inputReader.Jumping && groundChecker.IsColliding));
@@ -91,37 +114,23 @@ public class Player : MonoBehaviour
         //Moving
         stateMachine.AddTransition(fallingState, movingState, new FuncPredicate(() => groundChecker.IsColliding));
         stateMachine.AddTransition(wallslidingState, movingState, new FuncPredicate(() => groundChecker.IsColliding));
-        stateMachine.AddTransition(attackingState, movingState, new FuncPredicate(() => !attackManager.IsAttacking));
 
         //Dashing
         stateMachine.AddAnyTransition(dashingState, new FuncPredicate(() => inputReader.Dashing && !dashDurationTimer.IsRunning && !dashCooldownTimer.IsRunning));
 
         //Attacking
-        stateMachine.AddTransition(movingState, attackingState, new FuncPredicate(() => inputReader.Attacking && !attackManager.IsAttacking));
+
+        stateMachine.AddTransition(movingState, attack1State, new FuncPredicate(() => inputReader.Attacking));
+        stateMachine.AddTransition(attack1State, attack2State, new FuncPredicate(() => !attackDurationTimer.IsRunning && nextAttackQueued));
+        stateMachine.AddTransition(attack2State, attack3State, new FuncPredicate(() => !attackDurationTimer.IsRunning && nextAttackQueued));
+
+        stateMachine.AddTransition(attack1State, movingState, new FuncPredicate(() => !attackDurationTimer.IsRunning));
+        stateMachine.AddTransition(attack2State, movingState, new FuncPredicate(() => !attackDurationTimer.IsRunning));
+        stateMachine.AddTransition(attack3State, movingState, new FuncPredicate(() => !attackDurationTimer.IsRunning));
+
+        //
 
         stateMachine.SetState(movingState);
-    }
-
-    private void OnEnable()
-    {
-        attackManager.OnAttackStarted += OnAttackStarted;
-        attackManager.OnAttackFinished += OnAttackFinished;
-    }
-
-    private void OnAttackFinished()
-    {
-        SetVelocity(0, 0);
-    }
-
-    private void OnDisable()
-    {
-        attackManager.OnAttackStarted -= OnAttackStarted;
-        attackManager.OnAttackFinished -= OnAttackFinished;
-    }
-
-    private void OnAttackStarted(AttackData data)
-    {
-        SetVelocity(data.Movement.x * Facing(), data.Movement.y);
     }
 
     public int Facing()
@@ -149,7 +158,36 @@ public class Player : MonoBehaviour
 
     public void EnterAttackState()
     {
-        attackManager.StartAttack();
+        nextAttackQueued = false;
+
+        GameObject attackObject = Instantiate(CurrentAttackData.attackPrefab);
+        attackObject.transform.SetParent(attackParent, false);
+        attackObject.transform.localPosition = Vector3.zero;
+
+        animator.Play(CurrentAttackData.AnimationString);
+
+        float animationLength = animator.runtimeAnimatorController.animationClips.First((clip) => clip.name == CurrentAttackData.AnimationString).length;
+
+        attackDurationTimer.Reset(animationLength);
+        attackDurationTimer.Start();
+
+        attackNullInputTimer.Reset();
+        attackNullInputTimer.Start();
+
+        attackMoveDurationTimer.Reset(CurrentAttackData.MoveDuration);
+        attackMoveDurationTimer.Start();
+
+        attackMoveDurationTimer.OnTimerStop += () => SetVelocity(0, 0);
+
+        SetVelocity(CurrentAttackData.Movement.x * Facing(), CurrentAttackData.Movement.y);
+    }
+
+    public void UpdateAttackState()
+    {
+        if (inputReader.Attacking && !attackNullInputTimer.IsRunning)
+        {
+            nextAttackQueued = true;
+        }
     }
 
     public void EnterJumpingState()
@@ -194,6 +232,11 @@ public class Player : MonoBehaviour
         dashDurationTimer.Start();
     }
 
+    public void ExitWallslideState()
+    {
+        coyoteTimer.Start();
+    }
+
     public void ExitDashState()
     {
         dashDurationTimer.Stop();
@@ -206,6 +249,11 @@ public class Player : MonoBehaviour
 
         if (inputReader.MoveDirection.x != 0)
             SetFacing((int)inputReader.MoveDirection.x);
+    }
+
+    public void ExitMovementState()
+    {
+        coyoteTimer.Start();
     }
 
     public void UpdateJumpingAndFallingState()

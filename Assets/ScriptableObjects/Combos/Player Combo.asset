@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 55c5da93981d8a34abb1be6a8af7d89a, type: 3}
-  m_Name: Player Attack Cycle
+  m_Name: Player Combo
   m_EditorClassIdentifier: 
   Attacks:
   - {fileID: 566379375961525526, guid: eaaa9b3f436649c4cb5bd590b45498ce, type: 3}

@@ -5,5 +5,5 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "AttackCombo", menuName = "ScriptableObjects/AttackCombo")]
 public class AttackCombo : ScriptableObject
 {
-    public List<Attack> Attacks;
+    public List<string> AttackAnimationNames;
 }

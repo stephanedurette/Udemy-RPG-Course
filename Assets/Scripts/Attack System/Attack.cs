@@ -6,16 +6,11 @@ using System.Linq;
 using UnityEngine;
 
 public class Attack : MonoBehaviour
-{
-    [SerializeField] private AttackData attackData;
-    
+{   
     private Hitbox2D[] hitBoxes;
 
     private CountdownTimer[] hitboxSpawnTimers;
     private CountdownTimer[] hitboxLifetimeTimers;
-
-    public AttackData AttackData => attackData;
-    
     private void Awake()
     {
         hitBoxes = GetComponentsInChildren<Hitbox2D>();
