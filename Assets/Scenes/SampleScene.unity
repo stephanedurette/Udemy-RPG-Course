@@ -218,7 +218,6 @@ GameObject:
   - component: {fileID: 38107953}
   - component: {fileID: 38107954}
   - component: {fileID: 38107955}
-  - component: {fileID: 38107956}
   m_Layer: 0
   m_Name: Animator
   m_TagString: Untagged
@@ -314,18 +313,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &38107956
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 38107952}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2dde115648af4654d8472846f978229a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &43685096
 GameObject:
   m_ObjectHideFlags: 0
@@ -446,7 +433,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 38107955}
-  animatorEvents: {fileID: 38107956}
+  attackParent: {fileID: 1641973745}
   rigidBody: {fileID: 43685098}
   rotatePivot: {fileID: 1458564646}
   groundChecker: {fileID: 1644646500}
@@ -459,6 +446,7 @@ MonoBehaviour:
   attackCooldown: 1.5
   chaseCooldown: 10
   playerExitCombatDistance: 7
+  attackData: {fileID: 11400000, guid: 0cda85d94e51418439813c3f7b5e23d4, type: 2}
 --- !u!1 &106138539
 GameObject:
   m_ObjectHideFlags: 0
@@ -1590,6 +1578,7 @@ Transform:
   m_Children:
   - {fileID: 1412338245}
   - {fileID: 435687297}
+  - {fileID: 1641973745}
   m_Father: {fileID: 43685097}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1458892805
@@ -1676,6 +1665,37 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &1641973744
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1641973745}
+  m_Layer: 0
+  m_Name: Attack Parent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1641973745
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1641973744}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1458564646}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1644646498
 GameObject:
   m_ObjectHideFlags: 0

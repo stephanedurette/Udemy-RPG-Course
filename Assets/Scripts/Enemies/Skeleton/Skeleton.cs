@@ -2,13 +2,14 @@ using ImprovedTimers;
 using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Skeleton : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Animator animator;
-    [SerializeField] private AnimatorEvents animatorEvents;
+    [SerializeField] private Transform attackParent;
     [SerializeField] private Rigidbody2D rigidBody;
     [SerializeField] private Transform rotatePivot;
 
@@ -29,15 +30,15 @@ public class Skeleton : MonoBehaviour
     [SerializeField] private float attackCooldown = .4f;
     [SerializeField] private float chaseCooldown = 2f;
     [SerializeField] private float playerExitCombatDistance = 7f;
+    [SerializeField] private AttackData attackData;
 
     protected readonly int IdleAnimHash = Animator.StringToHash("Idle");
     protected readonly int WalkingAnimHash = Animator.StringToHash("Walk");
     protected readonly int ChasingAnimHash = Animator.StringToHash("Chase");
-    protected readonly int AttackingAnimHash = Animator.StringToHash("Attack");
 
     private StateMachine stateMachine;
 
-    private CountdownTimer idleTimer, attackCooldownTimer, chaseCooldownTimer;
+    private CountdownTimer idleTimer, attackCooldownTimer, chaseCooldownTimer, attackMoveTimer, attackDurationTimer;
 
     private void Awake()
     {
@@ -50,6 +51,9 @@ public class Skeleton : MonoBehaviour
         idleTimer = new CountdownTimer(idleTime);
         attackCooldownTimer = new CountdownTimer(attackCooldown);
         chaseCooldownTimer = new CountdownTimer(chaseCooldown);
+
+        attackDurationTimer = new CountdownTimer(0);
+        attackMoveTimer = new CountdownTimer(0);
     }
 
     private void SetupStateMachine()
@@ -74,7 +78,7 @@ public class Skeleton : MonoBehaviour
         //to chase
         stateMachine.AddTransition(idle, chasing, new FuncPredicate(() => canSeePlayer.IsColliding && groundChecker.IsColliding));
         stateMachine.AddTransition(walking, chasing, new FuncPredicate(() => canSeePlayer.IsColliding));
-        stateMachine.AddTransition(attacking, chasing, new ActionInvokedPredicate(ref animatorEvents.OnAnimationFinished));
+        stateMachine.AddTransition(attacking, chasing, new FuncPredicate(() => !attackDurationTimer.IsRunning));
 
         //to attack
         stateMachine.AddTransition(chasing, attacking, new FuncPredicate(() => playerInRange.IsColliding && !attackCooldownTimer.IsRunning));
@@ -135,9 +139,27 @@ public class Skeleton : MonoBehaviour
 
     public void EnterAttackState()
     {
-        animator.Play(AttackingAnimHash);
         attackCooldownTimer.Reset();
         attackCooldownTimer.Start();
+
+        GameObject attackObject = Instantiate(attackData.attackPrefab);
+        attackObject.transform.SetParent(attackParent, false);
+        attackObject.transform.localPosition = Vector3.zero;
+
+        animator.Play(attackData.AnimationString);
+
+        float animationLength = animator.runtimeAnimatorController.animationClips.First((clip) => clip.name == attackData.AnimationString).length;
+
+        attackDurationTimer.Reset(animationLength);
+        attackDurationTimer.Start();
+
+        attackMoveTimer.Reset(attackData.MoveDuration);
+        attackMoveTimer.Start();
+
+        attackMoveTimer.OnTimerStop += () => SetVelocity(0, 0);
+
+        SetVelocity(attackData.Movement.x * GetFacing(), attackData.Movement.y);
+
         SetXVelocity(0);
     }
 
