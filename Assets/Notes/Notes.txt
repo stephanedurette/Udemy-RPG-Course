@@ -1,7 +1,13 @@
-REFACTOR
 
 TUTORIAL
-
-- combo system implement, refactor attack manager
-
 -- I'm on 48 in the tutorial
+
+- need health system, players and skeletons need hurtboxes
+
+
+
+
+
+
+FUTURE
+- enemies that use decision trees as combo flowcharts
