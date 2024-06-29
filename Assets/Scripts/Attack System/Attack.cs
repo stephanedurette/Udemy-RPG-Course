@@ -43,7 +43,6 @@ public class Attack : MonoBehaviour
 
     private void SpawnHitbox(int index)
     {
-        Debug.Log(index);
         hitBoxes[index].gameObject.SetActive(true);
         hitboxLifetimeTimers[index].Start();
     }

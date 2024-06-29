@@ -10,7 +10,7 @@ public class PlayerFallingState : PlayerBaseState
 
     public override void FixedUpdate()
     {
-        player.HandleAirMovement();
+        player.UpdateJumpingAndFallingState();
     }
 
     public override void OnEnter()

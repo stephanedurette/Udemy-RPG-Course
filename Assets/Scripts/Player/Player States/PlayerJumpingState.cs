@@ -10,14 +10,13 @@ public class PlayerJumpingState : PlayerBaseState
 
     public override void FixedUpdate()
     {
-        player.HandleAirMovement();
+        player.UpdateJumpingAndFallingState();
     }
 
     public override void OnEnter()
     {
         player.StartAnimation(JumpingAnimHash);
-        player.Jump();
-        player.coyoteTimer.Stop();
+        player.EnterJumpingState();
     }
 
     public override void OnExit()

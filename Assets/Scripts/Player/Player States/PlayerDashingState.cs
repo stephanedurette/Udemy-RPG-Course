@@ -15,12 +15,12 @@ public class PlayerDashingState : PlayerBaseState
     public override void OnEnter()
     {
         player.StartAnimation(DashingAnimHash);
-        player.StartDash();
+        player.EnterDashState();
     }
 
     public override void OnExit()
     {
-        player.StopDash();
+        player.ExitDashState();
     }
 
     public override void Update()

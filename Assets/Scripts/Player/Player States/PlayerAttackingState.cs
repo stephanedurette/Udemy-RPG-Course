@@ -15,7 +15,7 @@ public class PlayerAttackingState : PlayerBaseState
 
     public override void OnEnter()
     {
-        player.StartAttack();
+        player.EnterAttackState();
     }
 
     public override void OnExit()

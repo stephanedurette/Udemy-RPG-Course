@@ -10,13 +10,13 @@ public class PlayerWallslidingState : PlayerBaseState
 
     public override void FixedUpdate()
     {
-        player.HandleWallSlide();
+        player.UpdateWallSlideState();
     }
 
     public override void OnEnter()
     {
         player.StartAnimation(WallslidingAnimHash);
-        player.EnterWallSlide();
+        player.EnterWallSlideState();
     }
 
     public override void OnExit()

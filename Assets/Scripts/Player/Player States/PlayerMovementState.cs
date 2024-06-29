@@ -10,7 +10,7 @@ public class PlayerMovementState : PlayerBaseState
 
     public override void FixedUpdate()
     {
-        player.HandleMovement();
+        player.UpdateMovementState();
     }
 
     public override void OnEnter()

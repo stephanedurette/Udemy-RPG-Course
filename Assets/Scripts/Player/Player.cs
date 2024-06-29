@@ -43,6 +43,8 @@ public class Player : MonoBehaviour
 
     private float startingGravityScale;
 
+    IState movingState, jumpingState, fallingState, wallslidingState, dashingState, attackingState;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -51,8 +53,6 @@ public class Player : MonoBehaviour
         SetupTimers();
         SetupStateMachine();
     }
-
-    bool WasWallSliding() => rigidBody.velocity.y < 0 && IsCollidingWithWall();
 
     private void SetupTimers()
     {
@@ -67,12 +67,12 @@ public class Player : MonoBehaviour
     {
         stateMachine = new StateMachine();
 
-        var movingState = new PlayerMovementState(this);
-        var jumpingState = new PlayerJumpingState(this);
-        var fallingState = new PlayerFallingState(this);
-        var wallslidingState = new PlayerWallslidingState(this);
-        var dashingState = new PlayerDashingState(this);
-        var attackingState = new PlayerAttackingState(this);
+        movingState = new PlayerMovementState(this);
+        jumpingState = new PlayerJumpingState(this);
+        fallingState = new PlayerFallingState(this);
+        wallslidingState = new PlayerWallslidingState(this);
+        dashingState = new PlayerDashingState(this);
+        attackingState = new PlayerAttackingState(this);
 
         //Jump
         stateMachine.AddTransition(movingState, jumpingState, new FuncPredicate(() => inputReader.Jumping && groundChecker.IsColliding));
@@ -86,7 +86,7 @@ public class Player : MonoBehaviour
         stateMachine.AddTransition(dashingState, fallingState, new FuncPredicate(() => !dashDurationTimer.IsRunning));
 
         //Wallslide
-        stateMachine.AddTransition(fallingState, wallslidingState, new FuncPredicate(WallSlidePredicate));
+        stateMachine.AddTransition(fallingState, wallslidingState, new FuncPredicate(() => IsCollidingWithWall() && inputReader.MoveDirection.x != -WallDirection()));
 
         //Moving
         stateMachine.AddTransition(fallingState, movingState, new FuncPredicate(() => groundChecker.IsColliding));
@@ -121,12 +121,12 @@ public class Player : MonoBehaviour
 
     private void OnAttackStarted(AttackData data)
     {
-        SetVelocity(data.Movement.x * SpriteFacing(), data.Movement.y);
+        SetVelocity(data.Movement.x * Facing(), data.Movement.y);
     }
 
-    public int SpriteFacing()
+    public int Facing()
     {
-        if (WasWallSliding())
+        if (stateMachine.PreviousState == wallslidingState)
         {
             return -WallDirection();
         } else
@@ -147,14 +147,16 @@ public class Player : MonoBehaviour
     public void SetXVelocity(float x) => rigidBody.velocity = new Vector2(x, rigidBody.velocity.y);
     public void SetVelocity(float x, float y) => rigidBody.velocity = new Vector2(x, y);
 
-    public void StartAttack()
+    public void EnterAttackState()
     {
         attackManager.StartAttack();
     }
 
-    public void Jump()
+    public void EnterJumpingState()
     {
-        if (WasWallSliding())
+        coyoteTimer.Stop();
+
+        if (stateMachine.PreviousState == wallslidingState)
         {
             float angleFromWall = 30;
             Vector2 rotatedVelocity = (Vector2.up * jumpForce).Rotated(angleFromWall * WallDirection());
@@ -167,35 +169,22 @@ public class Player : MonoBehaviour
         }
     }
 
-    private bool WallSlidePredicate()
-    {
-        bool collidingWithWall = IsCollidingWithWall();
-        bool inputTowardsWall = (inputReader.MoveDirection.x != -WallDirection());
+    private int WallDirection() => rightWallChecker.IsColliding ? 1 : leftWallChecker.IsColliding ? -1 : 0;
 
-        return collidingWithWall && inputTowardsWall;
-    }
-
-    private int WallDirection()
-    {
-        if (rightWallChecker.IsColliding) return 1;
-        if (leftWallChecker.IsColliding) return -1;
-        return 0;
-    }
-
-    public void EnterWallSlide()
+    public void EnterWallSlideState()
     {
         SetFacing(WallDirection());
     }
 
-    public void HandleWallSlide()
+    public void UpdateWallSlideState()
     {
         float speedMultiplier = inputReader.MoveDirection.y < 0 ? 1 : 0.8f;
         SetVelocity(0 , rigidBody.velocity.y * speedMultiplier);
     }
 
-    public void StartDash()
+    public void EnterDashState()
     {
-        int dashDirection = (int)inputReader.MoveDirection.x == 0 ? SpriteFacing() : (int)inputReader.MoveDirection.x;
+        int dashDirection = (int)inputReader.MoveDirection.x == 0 ? Facing() : (int)inputReader.MoveDirection.x;
 
         startingGravityScale = rigidBody.gravityScale;
         rigidBody.gravityScale = 0;
@@ -205,13 +194,13 @@ public class Player : MonoBehaviour
         dashDurationTimer.Start();
     }
 
-    public void StopDash()
+    public void ExitDashState()
     {
         dashDurationTimer.Stop();
         rigidBody.gravityScale = startingGravityScale;
     }
 
-    public void HandleMovement()
+    public void UpdateMovementState()
     {
         SetXVelocity(inputReader.MoveDirection.x * moveSpeed);
 
@@ -219,7 +208,7 @@ public class Player : MonoBehaviour
             SetFacing((int)inputReader.MoveDirection.x);
     }
 
-    public void HandleAirMovement()
+    public void UpdateJumpingAndFallingState()
     {
         float newXVelocity = Mathf.Clamp(rigidBody.velocity.x + airAccel * inputReader.MoveDirection.x * Time.deltaTime, -maxAirVelocity, maxAirVelocity);
 

@@ -10,6 +10,8 @@ public class StateMachine
 
     public Type CurrentState => current.State.GetType();
 
+    public IState PreviousState { get; private set; }
+
     public void Update()
     {
         ITransition transition = GetTransition();
@@ -59,10 +61,10 @@ public class StateMachine
     {
         if (state == current.State) return;
 
-        var previousState = current.State;
+        PreviousState = current.State;
         var nextState = nodes[state.GetType()].State;
 
-        previousState?.OnExit();
+        PreviousState?.OnExit();
         nextState?.OnEnter();
 
         current = nodes[state.GetType()];

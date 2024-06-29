@@ -9,7 +9,7 @@ public class AttackManager : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private InputReader inputReader;
-    [SerializeField] private AttackCycle attackCycle;
+    [SerializeField] private AttackCombo attackCycle;
     [SerializeField] private Animator animator;
 
     public bool IsAttacking {  get; private set; }
