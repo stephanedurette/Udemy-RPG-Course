@@ -7,14 +7,9 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class Player : MonoBehaviour
+public class Player : Entity
 {
-    [Header("References")]
-    [SerializeField] private Animator animator;
-    [SerializeField] private Rigidbody2D rigidBody;
-    [SerializeField] private Transform rotatePivot;
     [SerializeField] private InputReader inputReader;
-    [SerializeField] private Transform attackParent;
 
     [Header("Collision Check References")]
     [SerializeField] private BoxCaster groundChecker;
@@ -42,8 +37,6 @@ public class Player : MonoBehaviour
     public AttackData Attack2;
     public AttackData Attack3;
 
-    private StateMachine stateMachine;
-
     //timers
     private CountdownTimer dashDurationTimer;
     private CountdownTimer coyoteTimer;
@@ -62,15 +55,13 @@ public class Player : MonoBehaviour
     IState attack1State, attack2State, attack3State;
 
     // Start is called before the first frame update
-    void Awake()
+    protected override void Awake()
     {
         Instance = this;
-
-        SetupTimers();
-        SetupStateMachine();
+        base.Awake();
     }
 
-    private void SetupTimers()
+    protected override void SetupTimers()
     {
         dashDurationTimer = new CountdownTimer(dashDuration);
         dashCooldownTimer = new CountdownTimer(dashCooldown);
@@ -83,7 +74,7 @@ public class Player : MonoBehaviour
         dashDurationTimer.OnTimerStop += () => dashCooldownTimer.Start();
     }
 
-    private void SetupStateMachine()
+    protected override void SetupStateMachine()
     {
         stateMachine = new StateMachine();
 
@@ -119,7 +110,6 @@ public class Player : MonoBehaviour
         stateMachine.AddAnyTransition(dashingState, new FuncPredicate(() => inputReader.Dashing && !dashDurationTimer.IsRunning && !dashCooldownTimer.IsRunning));
 
         //Attacking
-
         stateMachine.AddTransition(movingState, attack1State, new FuncPredicate(() => inputReader.Attacking));
         stateMachine.AddTransition(attack1State, attack2State, new FuncPredicate(() => !attackDurationTimer.IsRunning && nextAttackQueued));
         stateMachine.AddTransition(attack2State, attack3State, new FuncPredicate(() => !attackDurationTimer.IsRunning && nextAttackQueued));
@@ -129,32 +119,21 @@ public class Player : MonoBehaviour
         stateMachine.AddTransition(attack3State, movingState, new FuncPredicate(() => !attackDurationTimer.IsRunning));
 
         //
-
         stateMachine.SetState(movingState);
     }
 
-    public int Facing()
+    public override int GetFacing()
     {
         if (stateMachine.PreviousState == wallslidingState)
         {
             return -WallDirection();
         } else
         {
-            return rotatePivot.transform.rotation == Quaternion.identity ? 1 : -1;
+            return rotatePivot.transform.rotation == facingRightRotation ? 1 : -1;
         }
     }
 
     private bool IsCollidingWithWall() => rightWallChecker.IsColliding || leftWallChecker.IsColliding;
-
-    // Update is called once per frame
-    void Update()
-    {
-        stateMachine.Update();
-    }
-
-    public void SetYVelocity(float y) => rigidBody.velocity = new Vector2(rigidBody.velocity.x, y);
-    public void SetXVelocity(float x) => rigidBody.velocity = new Vector2(x, rigidBody.velocity.y);
-    public void SetVelocity(float x, float y) => rigidBody.velocity = new Vector2(x, y);
 
     public void EnterAttackState()
     {
@@ -179,7 +158,7 @@ public class Player : MonoBehaviour
 
         attackMoveDurationTimer.OnTimerStop += () => SetVelocity(0, 0);
 
-        SetVelocity(CurrentAttackData.Movement.x * Facing(), CurrentAttackData.Movement.y);
+        SetVelocity(CurrentAttackData.Movement.x * GetFacing(), CurrentAttackData.Movement.y);
     }
 
     public void UpdateAttackState()
@@ -222,7 +201,7 @@ public class Player : MonoBehaviour
 
     public void EnterDashState()
     {
-        int dashDirection = (int)inputReader.MoveDirection.x == 0 ? Facing() : (int)inputReader.MoveDirection.x;
+        int dashDirection = (int)inputReader.MoveDirection.x == 0 ? GetFacing() : (int)inputReader.MoveDirection.x;
 
         startingGravityScale = rigidBody.gravityScale;
         rigidBody.gravityScale = 0;
@@ -266,23 +245,10 @@ public class Player : MonoBehaviour
             SetFacing(Math.Sign(newXVelocity));
     }
 
-    private void SetFacing(int dir)
-    {
-        Quaternion facingRightRotation = Quaternion.identity;
-        Quaternion facingLeftRotation = Quaternion.Euler(180 * Vector3.up);
-
-        rotatePivot.rotation = dir == 1 ? facingRightRotation : facingLeftRotation;
-    }
-
     public void UpdateAnimatorVelocity()
     {
         animator.SetFloat("xVelocity", rigidBody.velocity.x);
         animator.SetFloat("yVelocity", rigidBody.velocity.y);
-    }
-
-    private void FixedUpdate()
-    {
-        stateMachine.FixedUpdate();
     }
 
     

@@ -5,13 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Skeleton : MonoBehaviour
+public class Skeleton : Entity
 {
-    [Header("References")]
-    [SerializeField] private Animator animator;
-    [SerializeField] private Transform attackParent;
-    [SerializeField] private Rigidbody2D rigidBody;
-    [SerializeField] private Transform rotatePivot;
 
     [Header("Wall Collision Check References")]
     [SerializeField] private BoxCaster groundChecker;
@@ -36,17 +31,10 @@ public class Skeleton : MonoBehaviour
     protected readonly int WalkingAnimHash = Animator.StringToHash("Walk");
     protected readonly int ChasingAnimHash = Animator.StringToHash("Chase");
 
-    private StateMachine stateMachine;
-
     private CountdownTimer idleTimer, attackCooldownTimer, chaseCooldownTimer, attackMoveTimer, attackDurationTimer;
 
-    private void Awake()
-    {
-        SetupTimers();
-        SetupStateMachine();
-    }
 
-    private void SetupTimers()
+    protected override void SetupTimers()
     {
         idleTimer = new CountdownTimer(idleTime);
         attackCooldownTimer = new CountdownTimer(attackCooldown);
@@ -56,7 +44,7 @@ public class Skeleton : MonoBehaviour
         attackMoveTimer = new CountdownTimer(0);
     }
 
-    private void SetupStateMachine()
+    protected override void SetupStateMachine()
     {
         stateMachine = new StateMachine();
 
@@ -85,16 +73,6 @@ public class Skeleton : MonoBehaviour
 
 
         stateMachine.SetState(idle);
-    }
-
-    private void Update()
-    {
-        stateMachine.Update();
-    }
-
-    private void FixedUpdate()
-    {
-        stateMachine.FixedUpdate();
     }
 
     public void EnterIdleState()
@@ -162,22 +140,5 @@ public class Skeleton : MonoBehaviour
 
         SetXVelocity(0);
     }
-
-    private void SetFacing(int dir)
-    {
-        Quaternion facingRightRotation = Quaternion.identity;
-        Quaternion facingLeftRotation = Quaternion.Euler(180 * Vector3.up);
-
-        rotatePivot.rotation = dir == 1 ? facingRightRotation : facingLeftRotation;
-    }
-
-    public int GetFacing()
-    {
-        return rotatePivot.transform.rotation == Quaternion.identity ? 1 : -1; 
-    }
-
-    public void SetYVelocity(float y) => rigidBody.velocity = new Vector2(rigidBody.velocity.x, y);
-    public void SetXVelocity(float x) => rigidBody.velocity = new Vector2(x, rigidBody.velocity.y);
-    public void SetVelocity(float x, float y) => rigidBody.velocity = new Vector2(x, y);
 
 }
