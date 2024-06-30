@@ -1,11 +1,7 @@
 using ImprovedTimers;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class Player : Entity
 {
@@ -127,7 +123,8 @@ public class Player : Entity
         if (stateMachine.PreviousState == wallslidingState)
         {
             return -WallDirection();
-        } else
+        }
+        else
         {
             return rotatePivot.transform.rotation == facingRightRotation ? 1 : -1;
         }
@@ -176,7 +173,8 @@ public class Player : Entity
             SetVelocity(rotatedVelocity.x, rotatedVelocity.y);
 
             SetFacing((int)Mathf.Sign(rotatedVelocity.x));
-        } else
+        }
+        else
         {
             SetYVelocity(jumpForce);
         }
@@ -192,7 +190,7 @@ public class Player : Entity
     public void UpdateWallSlideState()
     {
         float speedMultiplier = inputReader.MoveDirection.y < 0 ? 1 : 0.8f;
-        SetVelocity(0 , rigidBody.velocity.y * speedMultiplier);
+        SetVelocity(0, rigidBody.velocity.y * speedMultiplier);
     }
 
     public void EnterDashState()
@@ -247,7 +245,7 @@ public class Player : Entity
         animator.SetFloat("yVelocity", rigidBody.velocity.y);
     }
 
-    
+
     public void StartAnimation(int animHash)
     {
         animator.CrossFade(animHash, 0);

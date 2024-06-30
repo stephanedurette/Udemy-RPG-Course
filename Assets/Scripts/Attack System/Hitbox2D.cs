@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider2D))]
@@ -25,7 +23,7 @@ public class Hitbox2D : MonoBehaviour
     {
         if (!targetLayerMask.ContainsLayer(collision.gameObject.layer)) return;
 
-        if(collision.gameObject.TryGetComponent(out Hurtbox2D hurtbox))
+        if (collision.gameObject.TryGetComponent(out Hurtbox2D hurtbox))
         {
             OnHitboxHit?.Invoke(collision.ClosestPoint(transform.position), hurtbox);
         }

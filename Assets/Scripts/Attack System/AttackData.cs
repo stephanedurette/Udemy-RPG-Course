@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "attack", menuName = "ScriptableObjects/AttackData")]
@@ -11,4 +9,3 @@ public class AttackData : ScriptableObject
 
     public string AnimationString;
 }
-    
