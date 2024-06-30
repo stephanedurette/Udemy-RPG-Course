@@ -13,6 +13,7 @@ public class Entity : MonoBehaviour
     [SerializeField] protected Rigidbody2D rigidBody;
     [SerializeField] protected Transform rotatePivot;
     [SerializeField] protected Hurtbox2D hurtBox;
+    [SerializeField] protected SpriteRenderer spriteRenderer;
     [SerializeField] protected AnimatorEvents animatorEvents;
 
     [Header("Heath Settings")]
@@ -21,6 +22,8 @@ public class Entity : MonoBehaviour
     protected StateMachine stateMachine;
 
     protected Health health;
+
+    protected Flasher flasher;
 
     protected Quaternion facingRightRotation = Quaternion.identity;
     protected Quaternion facingLeftRotation = Quaternion.Euler(180 * Vector3.up);
@@ -31,6 +34,7 @@ public class Entity : MonoBehaviour
         SetupStateMachine();
 
         health = new Health(maxHealth);
+        flasher = new Flasher(ref spriteRenderer);
     }
 
     protected virtual void OnEnable()
@@ -53,6 +57,7 @@ public class Entity : MonoBehaviour
     protected virtual void OnHit(Vector2 point, Hitbox2D hitbox)
     {
         health.TakeDamage(hitbox.Data.Damage);
+        flasher.Flash(Color.white, .15f);
     }
 
     protected virtual void OnHeathHitZero()

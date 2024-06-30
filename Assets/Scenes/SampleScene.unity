@@ -451,6 +451,7 @@ MonoBehaviour:
   rigidBody: {fileID: 43685098}
   rotatePivot: {fileID: 1458564646}
   hurtBox: {fileID: 1580492339}
+  spriteRenderer: {fileID: 38107954}
   animatorEvents: {fileID: 38107956}
   maxHealth: 3
   groundChecker: {fileID: 1644646500}
@@ -518,6 +519,7 @@ MonoBehaviour:
   rigidBody: {fileID: 106138542}
   rotatePivot: {fileID: 1269007877}
   hurtBox: {fileID: 982580229}
+  spriteRenderer: {fileID: 544457820}
   animatorEvents: {fileID: 544457821}
   maxHealth: 3
   inputReader: {fileID: 11400000, guid: 924a8322e8f875c45bf076707b8b2930, type: 2}
