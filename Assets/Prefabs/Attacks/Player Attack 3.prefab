@@ -60,6 +60,10 @@ PrefabInstance:
       propertyPath: targetLayerMask.m_Bits
       value: 128
       objectReference: {fileID: 0}
+    - target: {fileID: 4287729013629361895, guid: 64211aa8f53303941bdb55cc60867cdd, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8430040107985787382, guid: 64211aa8f53303941bdb55cc60867cdd, type: 3}
       propertyPath: attackData
       value: 

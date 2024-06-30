@@ -2,8 +2,5 @@
 TUTORIAL
 -- I'm on 48 in the tutorial
 
-- need health system, players and skeletons need hurtboxes
-	- setup hurtbox and health components on the entity class and test them on the player and skeletons
-
 FUTURE
 - enemies that use decision trees as combo flowcharts

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,8 +10,14 @@ public class Entity : MonoBehaviour
     [SerializeField] protected Transform attackParent;
     [SerializeField] protected Rigidbody2D rigidBody;
     [SerializeField] protected Transform rotatePivot;
+    [SerializeField] protected Hurtbox2D hurtBox;
+
+    [Header("Heath Settings")]
+    [SerializeField] private int maxHealth;
 
     protected StateMachine stateMachine;
+
+    protected Health health;
 
     protected Quaternion facingRightRotation = Quaternion.identity;
     protected Quaternion facingLeftRotation = Quaternion.Euler(180 * Vector3.up);
@@ -19,6 +26,29 @@ public class Entity : MonoBehaviour
     {
         SetupTimers();
         SetupStateMachine();
+
+        health = new Health(maxHealth);
+    }
+
+    protected virtual void OnEnable()
+    {
+        health.OnHealthHitZero += OnHeathHitZero;
+        hurtBox.OnHurtBoxHit += OnHit;
+    }
+
+    protected virtual void OnHit(Vector2 point, Hitbox2D hitbox)
+    {
+        health.TakeDamage(hitbox.Data.Damage);
+    }
+
+    protected virtual void OnHeathHitZero()
+    {
+    }
+
+    protected virtual void OnDisable()
+    {
+        health.OnHealthHitZero -= OnHeathHitZero;
+        hurtBox.OnHurtBoxHit -= OnHit;
     }
 
     protected virtual void SetupTimers()

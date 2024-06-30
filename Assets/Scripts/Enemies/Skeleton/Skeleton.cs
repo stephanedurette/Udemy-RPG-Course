@@ -141,4 +141,14 @@ public class Skeleton : Entity
         SetXVelocity(0);
     }
 
+    protected override void OnHeathHitZero()
+    {
+        Debug.Log("died");
+    }
+
+    protected override void OnHit(Vector2 point, Hitbox2D hitbox)
+    {
+        base.OnHit(point, hitbox);
+        Debug.Log("hit");
+    }
 }
