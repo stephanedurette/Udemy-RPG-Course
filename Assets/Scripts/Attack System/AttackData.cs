@@ -10,6 +10,5 @@ public class AttackData : ScriptableObject
     public float MoveDuration;
 
     public string AnimationString;
-    public GameObject attackPrefab;
 }
     

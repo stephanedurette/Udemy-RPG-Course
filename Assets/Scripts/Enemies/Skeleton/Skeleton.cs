@@ -119,11 +119,7 @@ public class Skeleton : Entity
     {
         attackCooldownTimer.Reset();
         attackCooldownTimer.Start();
-
-        GameObject attackObject = Instantiate(attackData.attackPrefab);
-        attackObject.transform.SetParent(attackParent, false);
-        attackObject.transform.localPosition = Vector3.zero;
-
+        
         animator.Play(attackData.AnimationString);
 
         float animationLength = animator.runtimeAnimatorController.animationClips.First((clip) => clip.name == attackData.AnimationString).length;

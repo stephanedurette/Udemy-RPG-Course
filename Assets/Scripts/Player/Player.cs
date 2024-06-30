@@ -139,10 +139,6 @@ public class Player : Entity
     {
         nextAttackQueued = false;
 
-        GameObject attackObject = Instantiate(CurrentAttackData.attackPrefab);
-        attackObject.transform.SetParent(attackParent, false);
-        attackObject.transform.localPosition = Vector3.zero;
-
         animator.Play(CurrentAttackData.AnimationString);
 
         float animationLength = animator.runtimeAnimatorController.animationClips.First((clip) => clip.name == CurrentAttackData.AnimationString).length;

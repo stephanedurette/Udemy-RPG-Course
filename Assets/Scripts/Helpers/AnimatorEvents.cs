@@ -7,16 +7,10 @@ using UnityEngine.Events;
 [RequireComponent(typeof(Animator))]
 public class AnimatorEvents : MonoBehaviour
 {
-    public Action OnAnimationFinished;
-    public Action<Attack> OnAttackStarted;
+    public Action<GameObject, float> OnSpawnHitbox;
 
-    public void FinishAnimation()
+    public void SpawnHitbox(AnimationEvent e)
     {
-        OnAnimationFinished?.Invoke();
-    }
-
-    public void StartAttack(Attack attack)
-    {
-        OnAttackStarted?.Invoke(attack);
+        OnSpawnHitbox?.Invoke(e.objectReferenceParameter as GameObject, e.floatParameter);
     }
 }

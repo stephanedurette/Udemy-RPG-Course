@@ -218,6 +218,7 @@ GameObject:
   - component: {fileID: 38107953}
   - component: {fileID: 38107954}
   - component: {fileID: 38107955}
+  - component: {fileID: 38107956}
   m_Layer: 0
   m_Name: Animator
   m_TagString: Untagged
@@ -313,6 +314,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &38107956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 38107952}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2dde115648af4654d8472846f978229a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &43685096
 GameObject:
   m_ObjectHideFlags: 0
@@ -438,6 +451,7 @@ MonoBehaviour:
   rigidBody: {fileID: 43685098}
   rotatePivot: {fileID: 1458564646}
   hurtBox: {fileID: 1580492339}
+  animatorEvents: {fileID: 38107956}
   maxHealth: 3
   groundChecker: {fileID: 1644646500}
   wallChecker: {fileID: 1260993875}
@@ -504,6 +518,7 @@ MonoBehaviour:
   rigidBody: {fileID: 106138542}
   rotatePivot: {fileID: 1269007877}
   hurtBox: {fileID: 982580229}
+  animatorEvents: {fileID: 544457821}
   maxHealth: 3
   inputReader: {fileID: 11400000, guid: 924a8322e8f875c45bf076707b8b2930, type: 2}
   groundChecker: {fileID: 1960014104}
@@ -1000,6 +1015,7 @@ GameObject:
   - component: {fileID: 544457818}
   - component: {fileID: 544457819}
   - component: {fileID: 544457820}
+  - component: {fileID: 544457821}
   m_Layer: 0
   m_Name: Animator
   m_TagString: Untagged
@@ -1095,6 +1111,18 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &544457821
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 544457817}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2dde115648af4654d8472846f978229a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &854169578
 GameObject:
   m_ObjectHideFlags: 0

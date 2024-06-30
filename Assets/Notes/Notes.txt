@@ -1,3 +1,10 @@
+TODO
+- animator spawn hitboxes
+
+- counter attack windows controlled by the animator for enemies
+- hit flash effect for entities after being hit
+- stun state for enemies after being counterattacked
+
 
 TUTORIAL
 -- I'm on 48 in the tutorial

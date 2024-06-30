@@ -120,4 +120,11 @@ AnimationClip:
   m_EulerEditorCurves: []
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
-  m_Events: []
+  m_Events:
+  - time: 0.46666667
+    functionName: SpawnHitbox
+    data: 
+    objectReferenceParameter: {fileID: 8157758498693069241, guid: ac27cab120d197f4d9bc4d27b93125c9, type: 3}
+    floatParameter: 0.1
+    intParameter: 0
+    messageOptions: 0

@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 
 public class Entity : MonoBehaviour
@@ -11,6 +13,7 @@ public class Entity : MonoBehaviour
     [SerializeField] protected Rigidbody2D rigidBody;
     [SerializeField] protected Transform rotatePivot;
     [SerializeField] protected Hurtbox2D hurtBox;
+    [SerializeField] protected AnimatorEvents animatorEvents;
 
     [Header("Heath Settings")]
     [SerializeField] private int maxHealth;
@@ -34,7 +37,18 @@ public class Entity : MonoBehaviour
     {
         health.OnHealthHitZero += OnHeathHitZero;
         hurtBox.OnHurtBoxHit += OnHit;
+
+        animatorEvents.OnSpawnHitbox += SpawnHitbox;
     }
+
+    private void SpawnHitbox(GameObject hitboxPrefab, float duration)
+    {
+        GameObject attackObject = Instantiate(hitboxPrefab);
+        attackObject.transform.SetParent(attackParent, false);
+        attackObject.transform.localPosition = Vector3.zero;
+        Destroy(attackObject, duration);
+    }
+
 
     protected virtual void OnHit(Vector2 point, Hitbox2D hitbox)
     {
@@ -49,6 +63,8 @@ public class Entity : MonoBehaviour
     {
         health.OnHealthHitZero -= OnHeathHitZero;
         hurtBox.OnHurtBoxHit -= OnHit;
+
+        animatorEvents.OnSpawnHitbox -= SpawnHitbox;
     }
 
     protected virtual void SetupTimers()
