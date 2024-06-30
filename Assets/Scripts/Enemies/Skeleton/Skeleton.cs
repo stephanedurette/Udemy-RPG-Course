@@ -1,5 +1,6 @@
 using ImprovedTimers;
 using JetBrains.Annotations;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,9 +31,13 @@ public class Skeleton : Entity
     protected readonly int IdleAnimHash = Animator.StringToHash("Idle");
     protected readonly int WalkingAnimHash = Animator.StringToHash("Walk");
     protected readonly int ChasingAnimHash = Animator.StringToHash("Chase");
+    protected readonly int HitAnimHash = Animator.StringToHash("Hit");
 
     private CountdownTimer idleTimer, attackCooldownTimer, chaseCooldownTimer, attackMoveTimer, attackDurationTimer;
 
+    private Hitbox2D lastHitboxHit;
+    private Vector2 lastPointHit;
+    private Action WasHit;
 
     protected override void SetupTimers()
     {
@@ -52,6 +57,7 @@ public class Skeleton : Entity
         SkeletonWalkingState walking = new SkeletonWalkingState(this);
         SkeletonChaseState chasing = new SkeletonChaseState(this);
         SkeletonAttackState attacking = new SkeletonAttackState(this);
+        SkeletonKnockbackState knockBackState = new SkeletonKnockbackState(this);
 
         //to walking
         stateMachine.AddTransition(idle, walking, new FuncPredicate(() => !idleTimer.IsRunning));
@@ -67,6 +73,10 @@ public class Skeleton : Entity
         stateMachine.AddTransition(idle, chasing, new FuncPredicate(() => canSeePlayer.IsColliding && groundChecker.IsColliding));
         stateMachine.AddTransition(walking, chasing, new FuncPredicate(() => canSeePlayer.IsColliding));
         stateMachine.AddTransition(attacking, chasing, new FuncPredicate(() => !attackDurationTimer.IsRunning));
+
+        //Knockback
+        stateMachine.AddAnyTransition(knockBackState, new ActionInvokedPredicate(ref WasHit));
+        stateMachine.AddTransition(knockBackState, chasing, new FuncPredicate(() => groundChecker.IsColliding && rigidBody.velocity.y <= .1f));
 
         //to attack
         stateMachine.AddTransition(chasing, attacking, new FuncPredicate(() => playerInRange.IsColliding && !attackCooldownTimer.IsRunning));
@@ -99,6 +109,27 @@ public class Skeleton : Entity
     {
         chaseCooldownTimer.Reset();
         chaseCooldownTimer.Start();
+    }
+
+    protected override void OnHit(Vector2 point, Hitbox2D hitbox)
+    {
+        base.OnHit(point, hitbox);
+
+        lastHitboxHit = hitbox;
+        lastPointHit = point;
+
+        WasHit?.Invoke();
+    }
+
+    public void EnterKnockbackState()
+    {
+        animator.Play(HitAnimHash);
+
+        Vector2 knockbackDirection = new Vector2();
+        knockbackDirection.x = Math.Sign(transform.position.x - lastPointHit.x);
+        knockbackDirection.y = Mathf.Tan(lastHitboxHit.Data.knockbackAngleDegrees * Mathf.Deg2Rad);
+
+        rigidBody.velocity = knockbackDirection.normalized * lastHitboxHit.Data.KnockbackForce;
     }
 
     public void UpdateChaseState()
@@ -147,9 +178,4 @@ public class Skeleton : Entity
         Debug.Log("died");
     }
 
-    protected override void OnHit(Vector2 point, Hitbox2D hitbox)
-    {
-        base.OnHit(point, hitbox);
-        Debug.Log("hit");
-    }
 }

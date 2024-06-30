@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Player Attack Data
   m_EditorClassIdentifier: 
   Damage: 1
-  KnockbackForce: 0
-  knockbackAngleDegrees: 0
+  KnockbackForce: 10
+  knockbackAngleDegrees: 45
+  KnockbackDuration: 0.3
   SpawnDelay: 0
   LifeTime: 0.2
