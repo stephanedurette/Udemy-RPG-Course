@@ -533,7 +533,7 @@ MonoBehaviour:
   dashSpeed: 20
   dashDuration: 0.25
   dashCooldown: 0.25
-  attackQueueNullInputDuration: 0.1
+  attackQueueNullInputDuration: 0.25
   Attack1: {fileID: 11400000, guid: a3299b7ba0d99ee4f9f2e426d57f0db4, type: 2}
   Attack2: {fileID: 11400000, guid: 9c7dec9e1c526014ba60b169470ff674, type: 2}
   Attack3: {fileID: 11400000, guid: 48bdef02fc292a04c8fd716368724489, type: 2}
