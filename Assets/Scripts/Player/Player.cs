@@ -2,6 +2,7 @@ using ImprovedTimers;
 using System;
 using System.Linq;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 public class Player : Entity
 {
@@ -42,13 +43,20 @@ public class Player : Entity
     private CountdownTimer attackMoveDurationTimer;
     private CountdownTimer attackNullInputTimer;
 
+    private CountdownTimer knockbackDurationTimer;
+
     private float startingGravityScale;
     private bool nextAttackQueued;
 
     [HideInInspector] public AttackData CurrentAttackData;
 
-    IState movingState, jumpingState, fallingState, wallslidingState, dashingState;
+    IState movingState, jumpingState, fallingState, wallslidingState, dashingState, knockbackState;
     IState attack1State, attack2State, attack3State;
+
+    private Hitbox2D lastHitboxHit;
+    private Vector2 lastPointHit;
+
+    public Action WasHit;
 
     // Start is called before the first frame update
     protected override void Awake()
@@ -67,6 +75,8 @@ public class Player : Entity
         attackMoveDurationTimer = new CountdownTimer(0);
         attackNullInputTimer = new CountdownTimer(attackQueueNullInputDuration);
 
+        knockbackDurationTimer = new CountdownTimer(0);
+
         dashDurationTimer.OnTimerStop += () => dashCooldownTimer.Start();
     }
 
@@ -79,6 +89,7 @@ public class Player : Entity
         fallingState = new PlayerFallingState(this);
         wallslidingState = new PlayerWallslidingState(this);
         dashingState = new PlayerDashingState(this);
+        knockbackState = new PlayerKnockbackState(this);
 
         attack1State = new PlayerAttack_1(this);
         attack2State = new PlayerAttack_2(this);
@@ -103,7 +114,14 @@ public class Player : Entity
         stateMachine.AddTransition(wallslidingState, movingState, new FuncPredicate(() => groundChecker.IsColliding));
 
         //Dashing
-        stateMachine.AddAnyTransition(dashingState, new FuncPredicate(() => inputReader.Dashing && !dashDurationTimer.IsRunning && !dashCooldownTimer.IsRunning));
+        stateMachine.AddTransition(movingState, dashingState, new FuncPredicate(() => inputReader.Dashing && !dashDurationTimer.IsRunning && !dashCooldownTimer.IsRunning));
+        stateMachine.AddTransition(jumpingState, dashingState, new FuncPredicate(() => inputReader.Dashing && !dashDurationTimer.IsRunning && !dashCooldownTimer.IsRunning));
+        stateMachine.AddTransition(fallingState, dashingState, new FuncPredicate(() => inputReader.Dashing && !dashDurationTimer.IsRunning && !dashCooldownTimer.IsRunning));
+        stateMachine.AddTransition(wallslidingState, dashingState, new FuncPredicate(() => inputReader.Dashing && !dashDurationTimer.IsRunning && !dashCooldownTimer.IsRunning));
+
+        //Knockback
+        stateMachine.AddAnyTransition(knockbackState, new ActionInvokedPredicate(ref WasHit));
+        stateMachine.AddTransition(knockbackState, fallingState, new FuncPredicate(() => !knockbackDurationTimer.IsRunning));
 
         //Attacking
         stateMachine.AddTransition(movingState, attack1State, new FuncPredicate(() => inputReader.Attacking));
@@ -152,6 +170,16 @@ public class Player : Entity
         attackMoveDurationTimer.OnTimerStop += () => SetVelocity(0, 0);
 
         SetVelocity(CurrentAttackData.Movement.x * GetFacing(), CurrentAttackData.Movement.y);
+    }
+
+    protected override void OnHit(Vector2 point, Hitbox2D hitbox)
+    {
+        base.OnHit(point, hitbox);
+
+        lastHitboxHit = hitbox;
+        lastPointHit = point;
+
+        WasHit?.Invoke();
     }
 
     public void UpdateAttackState()
@@ -222,6 +250,18 @@ public class Player : Entity
 
         if (inputReader.MoveDirection.x != 0)
             SetFacing((int)inputReader.MoveDirection.x);
+    }
+
+    public void EnterKnockbackState()
+    {
+        knockbackDurationTimer.Reset(lastHitboxHit.Data.KnockbackDuration);
+        knockbackDurationTimer.Start();
+
+        Vector2 knockbackDirection = new Vector2();
+        knockbackDirection.x = Math.Sign(transform.position.x - lastPointHit.x);
+        knockbackDirection.y = Mathf.Tan(lastHitboxHit.Data.knockbackAngleDegrees * Mathf.Deg2Rad);
+
+        rigidBody.velocity = knockbackDirection.normalized * lastHitboxHit.Data.KnockbackForce;
     }
 
     public void ExitMovementState()

@@ -9,6 +9,7 @@ public class PlayerBaseState : IState
     protected readonly int FallingAnimHash = Animator.StringToHash("Falling");
     protected readonly int DashingAnimHash = Animator.StringToHash("Dashing");
     protected readonly int WallslidingAnimHash = Animator.StringToHash("Wallsliding");
+    protected readonly int KnockbackAnimHash = Animator.StringToHash("Knockback");
 
     protected Player player;
 

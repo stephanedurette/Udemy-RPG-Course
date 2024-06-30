@@ -7,13 +7,7 @@ public class BoxCaster : MonoBehaviour
     [SerializeField] private float halfExtents;
     [SerializeField] private LayerMask detectLayer;
 
-    public bool IsColliding {  get; private set; }
-    
-    // Update is called once per frame
-    void Update()
-    {
-        //(Vector2 origin, Vector2 size, float angle, Vector2 direction, float distance, int layerMask)
-        IsColliding = Physics2D.BoxCast(
+    public bool IsColliding => Physics2D.BoxCast(
             transform.position,
             Vector2.one * halfExtents,
             0,
@@ -21,7 +15,6 @@ public class BoxCaster : MonoBehaviour
             0,
             detectLayer
         );
-    }
 
     private void OnDrawGizmos()
     {

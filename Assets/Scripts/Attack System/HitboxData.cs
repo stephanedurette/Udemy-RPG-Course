@@ -10,6 +10,7 @@ public class HitboxData : ScriptableObject
     public int Damage;
     public float KnockbackForce;
     public int knockbackAngleDegrees;
+    public float KnockbackDuration;
 
     [Header("Spawn Info")]
     public float SpawnDelay;

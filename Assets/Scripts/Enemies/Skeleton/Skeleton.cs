@@ -104,10 +104,15 @@ public class Skeleton : Entity
     public void UpdateChaseState()
     {
         int facing = GetFacing();
+        float distance = Mathf.Abs(Player.Instance.transform.position.x - transform.position.x);
         int targetFacingDirection = (int)Mathf.Sign(Player.Instance.transform.position.x - transform.position.x);
 
-        SetFacing(targetFacingDirection);
-        SetXVelocity(playerInRange.IsColliding ? 0 : chaseSpeed * facing);
+        if (distance > .3f)
+        {
+            SetFacing(targetFacingDirection);
+            SetXVelocity(playerInRange.IsColliding ? 0 : chaseSpeed * facing);
+        }
+
         animator.Play(playerInRange.IsColliding ? IdleAnimHash : ChasingAnimHash);
 
         if (targetFacingDirection != facing) {
