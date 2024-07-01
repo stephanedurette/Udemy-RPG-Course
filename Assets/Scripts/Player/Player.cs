@@ -34,6 +34,8 @@ public class Player : Entity
     public AttackData Attack2;
     public AttackData Attack3;
 
+    [SerializeField] private float knockbackDuration = .2f;
+
     //timers
     private CountdownTimer dashDurationTimer;
     private CountdownTimer coyoteTimer;
@@ -42,6 +44,7 @@ public class Player : Entity
     private CountdownTimer attackDurationTimer;
     private CountdownTimer attackMoveDurationTimer;
     private CountdownTimer attackNullInputTimer;
+    private CountdownTimer knockbackDurationTimer;
 
     private float startingGravityScale;
     private bool nextAttackQueued;
@@ -68,6 +71,8 @@ public class Player : Entity
         dashDurationTimer = new CountdownTimer(dashDuration);
         dashCooldownTimer = new CountdownTimer(dashCooldown);
         coyoteTimer = new CountdownTimer(0.2f);
+
+        knockbackDurationTimer = new CountdownTimer(knockbackDuration);
 
         attackDurationTimer = new CountdownTimer(0);
         attackMoveDurationTimer = new CountdownTimer(0);
@@ -117,7 +122,7 @@ public class Player : Entity
 
         //Knockback
         stateMachine.AddAnyTransition(knockbackState, new ActionInvokedPredicate(ref WasHit));
-        stateMachine.AddTransition(knockbackState, movingState, new FuncPredicate(() => groundChecker.IsColliding && rigidBody.velocity.y <= .1f));
+        stateMachine.AddTransition(knockbackState, fallingState, new FuncPredicate(() => !knockbackDurationTimer.IsRunning));
 
         //Attacking
         stateMachine.AddTransition(movingState, attack1State, new FuncPredicate(() => inputReader.Attacking));
@@ -250,6 +255,9 @@ public class Player : Entity
 
     public void EnterKnockbackState()
     {
+        knockbackDurationTimer.Reset();
+        knockbackDurationTimer.Start();
+
         Vector2 knockbackDirection = new Vector2();
         knockbackDirection.x = Math.Sign(transform.position.x - lastPointHit.x);
         knockbackDirection.y = Mathf.Tan(lastHitboxHit.Data.knockbackAngleDegrees * Mathf.Deg2Rad);

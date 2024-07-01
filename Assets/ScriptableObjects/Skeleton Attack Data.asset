@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: Skeleton Attack Data
   m_EditorClassIdentifier: 
   Damage: 1
-  KnockbackForce: 10
+  KnockbackForce: 20
   knockbackAngleDegrees: 55
-  KnockbackDuration: 0.3
   SpawnDelay: 0.4
   LifeTime: 0.1
