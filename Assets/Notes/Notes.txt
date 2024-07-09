@@ -5,7 +5,9 @@ TODO
 
 
 TUTORIAL
--- I'm on 48 in the tutorial
+-- Implement block / counter stunning, perfect block stuns enemies (dead cells)
+then
+-- I'm on 62 in the tutorial
 
 FUTURE
 - enemies that use decision trees as combo flowcharts
