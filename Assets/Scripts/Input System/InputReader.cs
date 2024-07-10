@@ -14,6 +14,7 @@ public class InputReader : ScriptableObject, IPlayerActions
 
     public bool Jumping { get; private set; }
     public bool Attacking { get; private set; }
+    public bool Blocking { get; private set; }
     public bool Dashing { get; private set; }
 
     private void OnEnable()
@@ -74,6 +75,19 @@ public class InputReader : ScriptableObject, IPlayerActions
                 break;
             case InputActionPhase.Canceled:
                 Dashing = false;
+                break;
+        }
+    }
+
+    public void OnBlock(InputAction.CallbackContext context)
+    {
+        switch (context.phase)
+        {
+            case InputActionPhase.Performed:
+                Blocking = true;
+                break;
+            case InputActionPhase.Canceled:
+                Blocking = false;
                 break;
         }
     }

@@ -1,5 +1,5 @@
 {
-    "name": "Inputs",
+    "name": "PlayerControls",
     "maps": [
         {
             "name": "Player",
@@ -36,6 +36,15 @@
                     "name": "Dash",
                     "type": "Button",
                     "id": "610f6626-88de-4fa0-ab17-4150ebbb8d7c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Block",
+                    "type": "Button",
+                    "id": "0f5ae1bf-5ee9-4da7-b359-c93ce058a23f",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -112,7 +121,7 @@
                 {
                     "name": "",
                     "id": "85f4775d-b80c-4a16-8e74-6732b5dd69af",
-                    "path": "<Mouse>/press",
+                    "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "Mouse And Keyboard",
@@ -128,6 +137,17 @@
                     "processors": "",
                     "groups": "Mouse And Keyboard",
                     "action": "Dash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "54921253-74c1-4ca6-bef6-6fba755fe27f",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Block",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

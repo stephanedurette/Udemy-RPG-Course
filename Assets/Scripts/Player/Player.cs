@@ -34,6 +34,9 @@ public class Player : Entity
     public AttackData Attack2;
     public AttackData Attack3;
 
+    [Header("Block Settings")]
+    public float parryTime = .2f;
+
     [SerializeField] private float knockbackDuration = .2f;
 
     //timers
@@ -46,13 +49,15 @@ public class Player : Entity
     private CountdownTimer attackNullInputTimer;
     private CountdownTimer knockbackDurationTimer;
 
+    private CountdownTimer parryTimer;
+
     private float startingGravityScale;
     private bool nextAttackQueued;
 
     [HideInInspector] public AttackData CurrentAttackData;
 
     IState movingState, jumpingState, fallingState, wallslidingState, dashingState, knockbackState;
-    IState attack1State, attack2State, attack3State;
+    IState attack1State, attack2State, attack3State, blockingState;
 
     private Hitbox2D lastHitboxHit;
     private Vector2 lastPointHit;
@@ -78,6 +83,8 @@ public class Player : Entity
         attackMoveDurationTimer = new CountdownTimer(0);
         attackNullInputTimer = new CountdownTimer(attackQueueNullInputDuration);
 
+        parryTimer = new CountdownTimer(parryTime);
+        
         dashDurationTimer.OnTimerStop += () => dashCooldownTimer.Start();
     }
 
@@ -91,6 +98,7 @@ public class Player : Entity
         wallslidingState = new PlayerWallslidingState(this);
         dashingState = new PlayerDashingState(this);
         knockbackState = new PlayerKnockbackState(this);
+        blockingState = new PlayerBlockingState(this);
 
         attack1State = new PlayerAttack_1(this);
         attack2State = new PlayerAttack_2(this);
@@ -133,6 +141,9 @@ public class Player : Entity
         stateMachine.AddTransition(attack2State, movingState, new FuncPredicate(() => !attackDurationTimer.IsRunning));
         stateMachine.AddTransition(attack3State, movingState, new FuncPredicate(() => !attackDurationTimer.IsRunning));
 
+        //Blocking
+        stateMachine.AddTransition(movingState, blockingState, new FuncPredicate(() => inputReader.Blocking));
+        stateMachine.AddTransition(blockingState, movingState, new FuncPredicate(() => !inputReader.Blocking));
         //
         stateMachine.SetState(movingState);
     }
@@ -175,11 +186,15 @@ public class Player : Entity
 
     protected override void OnHit(Vector2 point, Hitbox2D hitbox)
     {
-        base.OnHit(point, hitbox);
+        if (stateMachine.CurrentIState == blockingState)
+        {
+            return;
+        }
 
         lastHitboxHit = hitbox;
         lastPointHit = point;
 
+        base.OnHit(point, hitbox);
         WasHit?.Invoke();
     }
 
@@ -290,6 +305,12 @@ public class Player : Entity
     public void StartAnimation(int animHash)
     {
         animator.CrossFade(animHash, 0);
+    }
+
+    public void EnterBlockingState()
+    {
+        SetXVelocity(0f);
+        parryTimer.Start();
     }
 
 }

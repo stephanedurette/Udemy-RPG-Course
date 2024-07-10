@@ -11,7 +11,7 @@ public class StateMachine
     public Type CurrentState => current.State.GetType();
 
     public IState PreviousState { get; private set; }
-
+    public IState CurrentIState => current.State;
     public void Update()
     {
         ITransition transition = GetTransition();
