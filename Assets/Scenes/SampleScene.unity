@@ -537,6 +537,10 @@ MonoBehaviour:
   Attack1: {fileID: 11400000, guid: a3299b7ba0d99ee4f9f2e426d57f0db4, type: 2}
   Attack2: {fileID: 11400000, guid: 9c7dec9e1c526014ba60b169470ff674, type: 2}
   Attack3: {fileID: 11400000, guid: 48bdef02fc292a04c8fd716368724489, type: 2}
+  parryTime: 0.2
+  blockKnockbackForce: 5
+  blockMaterial: {fileID: 6200000, guid: 3c9eaa6cc6255454484ea9f5572d65b9, type: 2}
+  defaultMaterial: {fileID: 6200000, guid: 71121a979fd94b04ca16ed5f5872d2a7, type: 2}
   knockbackDuration: 0.2
   CurrentAttackData: {fileID: 0}
 --- !u!50 &106138542
@@ -555,7 +559,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 3.5
-  m_Material: {fileID: 6200000, guid: 71121a979fd94b04ca16ed5f5872d2a7, type: 2}
+  m_Material: {fileID: 6200000, guid: 3c9eaa6cc6255454484ea9f5572d65b9, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0

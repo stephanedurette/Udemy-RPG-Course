@@ -36,6 +36,9 @@ public class Player : Entity
 
     [Header("Block Settings")]
     public float parryTime = .2f;
+    public float blockKnockbackForce = .5f;
+    public PhysicsMaterial2D blockMaterial;
+    public PhysicsMaterial2D defaultMaterial;
 
     [SerializeField] private float knockbackDuration = .2f;
 
@@ -55,6 +58,8 @@ public class Player : Entity
     private bool nextAttackQueued;
 
     [HideInInspector] public AttackData CurrentAttackData;
+
+    [HideInInspector] public bool IsParrying => parryTimer.IsRunning;
 
     IState movingState, jumpingState, fallingState, wallslidingState, dashingState, knockbackState;
     IState attack1State, attack2State, attack3State, blockingState;
@@ -186,8 +191,20 @@ public class Player : Entity
 
     protected override void OnHit(Vector2 point, Hitbox2D hitbox)
     {
-        if (stateMachine.CurrentIState == blockingState)
+        bool isAttackSourceInBlockDir = Math.Sign(point.x - transform.position.x) == GetFacing();
+
+        //blocking
+        if (stateMachine.CurrentIState == blockingState && isAttackSourceInBlockDir)
         {
+            if (IsParrying)
+            {
+
+            } 
+            else
+            {
+                SetXVelocity(-GetFacing() * blockKnockbackForce);
+            }
+
             return;
         }
 
@@ -310,7 +327,14 @@ public class Player : Entity
     public void EnterBlockingState()
     {
         SetXVelocity(0f);
+        rigidBody.sharedMaterial = blockMaterial;
         parryTimer.Start();
+    }
+
+    public void ExitBlockingState()
+    {
+        rigidBody.sharedMaterial = defaultMaterial;
+        parryTimer.Stop();
     }
 
 }

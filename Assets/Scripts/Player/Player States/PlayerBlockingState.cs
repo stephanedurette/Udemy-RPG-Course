@@ -20,7 +20,8 @@ public class PlayerBlockingState : PlayerBaseState
 
     public override void OnExit()
     {
-        
+
+        player.ExitBlockingState();
     }
 
     public override void Update()
