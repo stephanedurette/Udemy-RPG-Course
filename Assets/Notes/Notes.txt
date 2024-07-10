@@ -5,6 +5,8 @@ TODO
 
 
 TUTORIAL
+-- logic is in the player states
+
 -- Implement block / counter stunning, perfect block stuns enemies (dead cells)
 then
 -- I'm on 62 in the tutorial
