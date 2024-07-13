@@ -39,6 +39,28 @@ public class Skeleton : Entity
     private Vector2 lastPointHit;
     private Action WasHit;
 
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+        animatorEvents.OnSpawnHitbox += SpawnHitbox;
+    }
+
+    private void SpawnHitbox(GameObject hitboxObject, float time)
+    {
+        hitboxObject.GetComponent<Hitbox2D>().OnHitboxHit += OnHitboxHit;
+    }
+
+    private void OnHitboxHit(Vector2 point, Hurtbox2D hurtBox)
+    {
+        Debug.Log("hit");
+        Player p = hurtBox.Owner as Player;
+
+        if (p.IsParrying(point))
+        {
+            Debug.Log("parry");
+        }
+    }
+
     protected override void SetupTimers()
     {
         idleTimer = new CountdownTimer(idleTime);
@@ -84,6 +106,8 @@ public class Skeleton : Entity
 
         stateMachine.SetState(idle);
     }
+
+
 
     public void EnterIdleState()
     {

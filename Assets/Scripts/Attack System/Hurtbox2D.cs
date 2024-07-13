@@ -7,11 +7,12 @@ public class Hurtbox2D : MonoBehaviour
     private Collider2D col;
 
     public Action<Vector2, Hitbox2D> OnHurtBoxHit;
+    public Entity Owner;
 
     private void Awake()
     {
         col = GetComponent<Collider2D>();
-
+        Owner = GetComponentInParent<Entity>();
         col.isTrigger = true;
     }
 

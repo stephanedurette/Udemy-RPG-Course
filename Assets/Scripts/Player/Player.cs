@@ -1,5 +1,6 @@
 using ImprovedTimers;
 using System;
+using System.Drawing;
 using System.Linq;
 using UnityEngine;
 using static UnityEngine.Rendering.DebugUI;
@@ -59,7 +60,7 @@ public class Player : Entity
 
     [HideInInspector] public AttackData CurrentAttackData;
 
-    [HideInInspector] public bool IsParrying => parryTimer.IsRunning;
+    [HideInInspector] public bool IsParrying(Vector2 pos) => parryTimer.IsRunning && Math.Sign(pos.x - transform.position.x) == GetFacing();
 
     IState movingState, jumpingState, fallingState, wallslidingState, dashingState, knockbackState;
     IState attack1State, attack2State, attack3State, blockingState;
@@ -196,7 +197,7 @@ public class Player : Entity
         //blocking
         if (stateMachine.CurrentIState == blockingState && isAttackSourceInBlockDir)
         {
-            if (IsParrying)
+            if (IsParrying(point))
             {
 
             } 

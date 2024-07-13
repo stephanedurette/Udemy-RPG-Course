@@ -25,7 +25,7 @@ public class Hitbox2D : MonoBehaviour
 
         if (collision.gameObject.TryGetComponent(out Hurtbox2D hurtbox))
         {
-            OnHitboxHit?.Invoke(collision.ClosestPoint(transform.position), hurtbox);
+            OnHitboxHit?.Invoke(transform.position, hurtbox);
         }
     }
 }
